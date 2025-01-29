@@ -1,7 +1,6 @@
 package com.young
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.runApplication
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing
@@ -9,8 +8,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing
 @EnableJpaAuditing
 @ConfigurationPropertiesScan
 @SpringBootApplication
-class KotlinJwtApplication
+class YoungApplication
 
 fun main(args: Array<String>) {
-    runApplication<KotlinJwtApplication>(*args)
+    runApplication<YoungApplication>(*args)
 }
