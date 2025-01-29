@@ -1,7 +1,6 @@
 package com.young.domain.item.dto.response
 
 import com.young.domain.item.domain.entity.Item
-import com.young.domain.item.repository.ImageRepository
 
 data class ItemResponse(
     val id: Long,

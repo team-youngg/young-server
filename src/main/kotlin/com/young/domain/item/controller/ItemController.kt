@@ -26,6 +26,9 @@ class ItemController (
     @GetMapping("/{itemId}")
     fun getItem(@PathVariable itemId: Long) = itemService.getItem(itemId)
 
+    @GetMapping
+    fun getItems() = itemService.getItems()
+
     // TODO 아이템 조회
     // TODO 아이템 수정 삭제, 파일 수정 삭제
 }

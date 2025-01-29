@@ -46,9 +46,14 @@ class ItemService (
         return ItemResponse.of(item, images)
     }
 
-//    fun getItems(): List<ItemResponse> {
-//
-//    }
+    fun getItems(): List<ItemResponse> {
+        val items = itemRepository.findAll()
+
+        return items.map { item ->
+            val image = getImages(item.id!!).first()
+            ItemResponse.of(item, listOf(image))
+        }
+    }
 
     fun uploadImage(file: MultipartFile, itemId: Long) {
         val filename = "${UUID.randomUUID()}-${file.originalFilename}"
