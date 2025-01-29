@@ -3,11 +3,7 @@ package com.young.domain.item.controller
 import com.young.domain.item.dto.request.CreateItemRequest
 import com.young.domain.item.service.ItemService
 import org.springframework.http.MediaType
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RequestPart
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
 @RestController
@@ -26,6 +22,9 @@ class ItemController (
         val itemData = CreateItemRequest(name, description, price, stock)
         itemService.createItem(itemData, files)
     }
+
+    @GetMapping("/{itemId}")
+    fun getItem(@PathVariable itemId: Long) = itemService.getItem(itemId)
 
     // TODO 아이템 조회
     // TODO 아이템 수정 삭제, 파일 수정 삭제

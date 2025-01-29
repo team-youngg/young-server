@@ -22,3 +22,5 @@ class User (
     @Column(name = "email", nullable = false, unique = true)
     val email: String,
 ) : BaseEntity()
+
+// TODO avatar 추가(구글꺼)
