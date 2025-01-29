@@ -1,4 +1,4 @@
-package com.young.domain.oauth.dto.response
+package com.young.domain.auth.dto.response
 
 data class GoogleUserResponse (
     val email: String,

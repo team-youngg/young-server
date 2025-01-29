@@ -1,4 +1,4 @@
-package com.young.domain.oauth.config
+package com.young.domain.auth.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 

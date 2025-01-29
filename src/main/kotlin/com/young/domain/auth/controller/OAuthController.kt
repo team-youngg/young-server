@@ -1,7 +1,7 @@
-package com.young.domain.oauth.controller
+package com.young.domain.auth.controller
 
-import com.young.domain.oauth.dto.request.GoogleLoginRequest
-import com.young.domain.oauth.service.OAuthService
+import com.young.domain.auth.dto.request.GoogleLoginRequest
+import com.young.domain.auth.service.OAuthService
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping

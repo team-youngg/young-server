@@ -1,9 +1,9 @@
-package com.young.domain.oauth.service
+package com.young.domain.auth.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.young.domain.oauth.dto.response.GoogleUserResponse
-import com.young.domain.oauth.dto.request.GoogleLoginRequest
-import com.young.domain.oauth.config.GoogleProperties
+import com.young.domain.auth.dto.response.GoogleUserResponse
+import com.young.domain.auth.dto.request.GoogleLoginRequest
+import com.young.domain.auth.config.GoogleProperties
 import com.young.domain.user.domain.entity.User
 import com.young.domain.user.domain.enums.UserRole
 import com.young.domain.user.repository.UserRepository
