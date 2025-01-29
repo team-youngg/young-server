@@ -33,7 +33,6 @@ class OAuthService (
         val user = User(
             email = googleUser.email,
             username = googleUser.username,
-            password = googleUser.password,
             role = UserRole.USER
         )
 
@@ -97,8 +96,7 @@ class OAuthService (
 
                 GoogleUserResponse(
                     email = jsonNode["email"].asText(),
-                    username = jsonNode["name"].asText(),
-                    password = "OAUTH_USER"
+                    username = jsonNode["name"].asText()
                 )
             }
             .block()!!
