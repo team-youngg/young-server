@@ -59,6 +59,10 @@ dependencies {
 
     // oauth
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+
+    // web client
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 }
 
 kotlin {
