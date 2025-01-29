@@ -22,5 +22,8 @@ class User (
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    val role: UserRole
+    val role: UserRole,
+
+    @Column(name = "email", nullable = false, unique = true)
+    val email: String,
 ) : BaseEntity()

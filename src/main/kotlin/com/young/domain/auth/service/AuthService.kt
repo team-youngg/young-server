@@ -25,23 +25,23 @@ class AuthService(
     private val passwordEncoder: PasswordEncoder,
     private val jwtProvider: JwtProvider,
 ) {
-    @Transactional
-    fun signup(request: SignUpRequest) {
-        val username = request.username
-        val password = passwordEncoder.encode(request.password)
-
-        if (userRepository.existsByUsername(username)) {
-            throw CustomException(UserError.USERNAME_DUPLICATED)
-        }
-
-        val user = User(
-            username = username,
-            password = password,
-            role = UserRole.USER
-        )
-
-        userRepository.save(user)
-    }
+//    @Transactional
+//    fun signup(request: SignUpRequest) {
+//        val username = request.username
+//        val password = passwordEncoder.encode(request.password)
+//
+//        if (userRepository.existsByUsername(username)) {
+//            throw CustomException(UserError.USERNAME_DUPLICATED)
+//        }
+//
+//        val user = User(
+//            username = username,
+//            password = password,
+//            role = UserRole.USER
+//        )
+//
+//        userRepository.save(user)
+//    }
 
     @Transactional
     fun login(request: LoginRequest): JwtResponse {
@@ -63,7 +63,7 @@ class AuthService(
             throw CustomException(JwtError.INVALID_TOKEN_TYPE)
         }
 
-        val username = jwtProvider.getUsername(request.refreshToken)
+        val username = jwtProvider.getEmail(request.refreshToken)
         val user = userRepository.findByUsername(username) ?: throw CustomException(UserError.USER_NOT_FOUND)
         val refreshToken =
             refreshTokenRepository.getRefreshToken(username) ?: throw CustomException(JwtError.INVALID_TOKEN)

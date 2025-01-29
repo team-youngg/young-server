@@ -37,7 +37,7 @@ class JwtProvider(
             .header()
             .type(JwtType.ACCESS.name)
             .and()
-            .subject(user.username)
+            .subject(user.email)
             .issuedAt(now)
             .issuer(jwtProperties.issuer)
             .expiration(Date(now.time + jwtProperties.accessExp))
@@ -48,23 +48,23 @@ class JwtProvider(
             .header()
             .type(JwtType.REFRESH.name)
             .and()
-            .subject(user.username)
+            .subject(user.email)
             .issuedAt(now)
             .issuer(jwtProperties.issuer)
             .expiration(Date(now.time + jwtProperties.refreshExp))
             .signWith(key)
             .compact()
 
-        refreshTokenRepository.setRefreshToken(user.username, refreshToken)
+        refreshTokenRepository.setRefreshToken(user.email, refreshToken)
 
         return JwtResponse(accessToken, refreshToken)
     }
 
-    fun getUsername(token: String): String = getClaims(token).subject
+    fun getEmail(token: String): String = getClaims(token).subject
 
     fun getAuthentication(token: String): Authentication {
         val claims = getClaims(token)
-        val user = userRepository.findByUsername(claims.subject) ?: throw CustomException(UserError.USER_NOT_FOUND)
+        val user = userRepository.findByEmail(claims.subject) ?: throw CustomException(UserError.USER_NOT_FOUND)
         val details = CustomUserDetails(user)
 
         return UsernamePasswordAuthenticationToken(details, null, details.authorities)

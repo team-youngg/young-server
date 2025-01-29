@@ -13,6 +13,6 @@ class SecurityHolder(
     private val userRepository: UserRepository,
 ) {
     val user: User
-        get() = userRepository.findByUsername(SecurityContextHolder.getContext().authentication.name)
+        get() = userRepository.findByEmail(SecurityContextHolder.getContext().authentication.name)
             ?: throw CustomException(UserError.USER_NOT_FOUND)
 }
