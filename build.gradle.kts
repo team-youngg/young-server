@@ -56,6 +56,9 @@ dependencies {
 
     // Swagger
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
+
+    // oauth
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 }
 
 kotlin {

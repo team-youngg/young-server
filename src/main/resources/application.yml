@@ -6,7 +6,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
   data:
     redis:
       host: localhost
@@ -17,3 +17,5 @@ spring:
     secret-key: ${SECRET_KEY}
     access-exp: 360000
     refresh-exp: 8640000
+  profiles:
+    include: oauth
