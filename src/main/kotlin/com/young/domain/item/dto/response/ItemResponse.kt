@@ -6,8 +6,8 @@ data class ItemResponse(
     val id: Long,
     val name: String,
     val description: String,
-    val price: Int,
-    val stock: Int,
+    val price: Long,
+    val stock: Long,
     val images: List<String>
 ) {
     companion object {

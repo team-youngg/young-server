@@ -15,8 +15,8 @@ class Item (
     val description: String,
 
     @Column(nullable = false)
-    var price: Int,
+    var price: Long,
 
     @Column(nullable = false)
-    var stock: Int,
+    var stock: Long,
 )

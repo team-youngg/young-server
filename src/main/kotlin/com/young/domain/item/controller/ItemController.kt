@@ -15,8 +15,8 @@ class ItemController (
     fun createItem(
         @RequestParam name: String,
         @RequestParam description: String,
-        @RequestParam price: Int,
-        @RequestParam stock: Int,
+        @RequestParam price: Long,
+        @RequestParam stock: Long,
         @RequestPart("files", required = false) files: List<MultipartFile>
     ) {
         val itemData = CreateItemRequest(name, description, price, stock)
@@ -29,6 +29,5 @@ class ItemController (
     @GetMapping
     fun getItems() = itemService.getItems()
 
-    // TODO 아이템 조회
     // TODO 아이템 수정 삭제, 파일 수정 삭제
 }
