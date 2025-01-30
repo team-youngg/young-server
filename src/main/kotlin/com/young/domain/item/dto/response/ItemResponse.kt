@@ -8,6 +8,7 @@ data class ItemResponse(
     val description: String,
     val price: Long,
     val stock: Long,
+    val options: List<String>,
     val images: List<String>
 ) {
     companion object {
@@ -18,8 +19,11 @@ data class ItemResponse(
                 description = item.description,
                 price = item.price,
                 stock = item.stock,
+                options = emptyList(),
                 images = images
             )
         }
     }
 }
+
+//TODO

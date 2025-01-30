@@ -2,10 +2,12 @@ package com.young.domain.item.service
 
 import com.young.domain.item.domain.entity.Image
 import com.young.domain.item.domain.entity.Item
+import com.young.domain.item.domain.entity.ItemOption
 import com.young.domain.item.dto.request.CreateItemRequest
 import com.young.domain.item.dto.response.ItemResponse
 import com.young.domain.item.error.ItemError
 import com.young.domain.item.repository.ImageRepository
+import com.young.domain.item.repository.ItemOptionRepository
 import com.young.domain.item.repository.ItemRepository
 import com.young.global.exception.CustomException
 import org.springframework.beans.factory.annotation.Value
@@ -21,7 +23,8 @@ import java.util.*
 class ItemService (
     @Value("\${spring.upload.dir}") private val uploadDir: String,
     private val itemRepository: ItemRepository,
-    private val imageRepository: ImageRepository
+    private val imageRepository: ImageRepository,
+    private val itemOptionRepository: ItemOptionRepository
 ) {
     @Transactional
     fun createItem(request: CreateItemRequest, files: List<MultipartFile>) {
@@ -31,8 +34,15 @@ class ItemService (
             price = request.price,
             stock = request.stock,
         )
-
         itemRepository.save(item)
+
+        for (option in request.options) {
+            val itemOption = ItemOption(
+                item = item,
+                name = option
+            )
+            itemOptionRepository.save(itemOption)
+        }
 
         for (file in files) {
             uploadImage(file, item.id!!)
