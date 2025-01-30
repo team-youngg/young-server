@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.young.domain.auth.dto.response.GoogleUserResponse
 import com.young.domain.auth.dto.request.GoogleLoginRequest
 import com.young.domain.auth.config.GoogleProperties
+import com.young.domain.cart.domain.entity.Cart
+import com.young.domain.cart.repository.CartRepository
 import com.young.domain.user.domain.entity.User
 import com.young.domain.user.domain.enums.UserRole
 import com.young.domain.user.repository.UserRepository
@@ -24,6 +26,7 @@ class OAuthService (
     private val userRepository: UserRepository,
     private val googleProperties: GoogleProperties,
     private val webClient: WebClient.Builder,
+    private val cartRepository: CartRepository,
 ) {
     @Transactional
     fun login(request: GoogleLoginRequest): JwtResponse {
@@ -36,7 +39,14 @@ class OAuthService (
             role = UserRole.USER
         )
 
-        if (!userRepository.existsByEmail(googleUser.email)) userRepository.save(user)
+        if (!userRepository.existsByEmail(googleUser.email)) {
+            userRepository.save(user)
+
+            val cart = Cart(
+                user = user,
+            )
+            cartRepository.save(cart)
+        }
 
         return jwtProvider.generateToken(user)
     }

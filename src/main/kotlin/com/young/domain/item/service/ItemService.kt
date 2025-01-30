@@ -50,8 +50,8 @@ class ItemService (
         val items = itemRepository.findAll()
 
         return items.map { item ->
-            val image = getImages(item.id!!).first()
-            ItemResponse.of(item, listOf(image))
+            val image = getImages(item.id!!)
+            ItemResponse.of(item, image)
         }
     }
 
