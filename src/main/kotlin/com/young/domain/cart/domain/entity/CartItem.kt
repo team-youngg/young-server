@@ -5,8 +5,10 @@ import com.young.global.common.BaseEntity
 import jakarta.persistence.*
 
 @Entity
+@Table(name = "cart_items")
 class CartItem (
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     val id: Long? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
