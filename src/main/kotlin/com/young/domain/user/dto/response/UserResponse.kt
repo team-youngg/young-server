@@ -8,7 +8,7 @@ data class UserResponse(
 ) {
     companion object {
         fun of(user: User) = UserResponse(
-            email = user.username,
+            email = user.email,
             username = user.username,
         )
     }
