@@ -12,18 +12,16 @@ data class ItemResponse(
     val images: List<String>
 ) {
     companion object {
-        fun of(item: Item, images: List<String>): ItemResponse {
+        fun of(item: Item, images: List<String>, options: List<String>): ItemResponse {
             return ItemResponse(
                 id = item.id!!,
                 name = item.name,
                 description = item.description,
                 price = item.price,
                 stock = item.stock,
-                options = emptyList(),
+                options = options,
                 images = images
             )
         }
     }
 }
-
-//TODO

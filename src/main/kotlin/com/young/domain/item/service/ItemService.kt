@@ -11,6 +11,7 @@ import com.young.domain.item.repository.ItemOptionRepository
 import com.young.domain.item.repository.ItemRepository
 import com.young.global.exception.CustomException
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -48,16 +49,18 @@ class ItemService (
     fun getItem(id: Long): ItemResponse {
         val item = itemRepository.findByIdOrNull(id) ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
         val images = getImages(id)
+        val options = getOptions(item)
 
-        return ItemResponse.of(item, images)
+        return ItemResponse.of(item, images, options)
     }
 
-    fun getItems(): List<ItemResponse> {
-        val items = itemRepository.findAll()
+    fun getItems(pageable: Pageable): List<ItemResponse> {
+        val items = itemRepository.findAllByOrderByCreatedAtDesc(pageable).toList()
 
         return items.map { item ->
             val image = getImages(item.id!!)
-            ItemResponse.of(item, image)
+            val options = getOptions(item)
+            ItemResponse.of(item, image, options)
         }
     }
 
@@ -87,5 +90,10 @@ class ItemService (
                 .path(image.url)
                 .toUriString()
         }
+    }
+
+    fun getOptions(item: Item): List<String> {
+        val options = itemOptionRepository.findAllByItem(item)
+        return options.map { options -> options.name }
     }
 }

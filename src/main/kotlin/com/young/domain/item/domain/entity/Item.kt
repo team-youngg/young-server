@@ -1,5 +1,6 @@
 package com.young.domain.item.domain.entity
 
+import com.young.global.common.BaseEntity
 import jakarta.persistence.*
 
 @Entity
@@ -19,4 +20,4 @@ class Item (
 
     @Column(nullable = false)
     var stock: Long,
-)
+) : BaseEntity()
