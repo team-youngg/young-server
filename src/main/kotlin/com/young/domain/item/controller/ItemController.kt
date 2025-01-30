@@ -2,6 +2,8 @@ package com.young.domain.item.controller
 
 import com.young.domain.item.dto.request.CreateItemRequest
 import com.young.domain.item.service.ItemService
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -28,7 +30,7 @@ class ItemController (
     fun getItem(@PathVariable itemId: Long) = itemService.getItem(itemId)
 
     @GetMapping
-    fun getItems() = itemService.getItems()
+    fun getItems(@PageableDefault pageable: Pageable) = itemService.getItems(pageable)
 
     // TODO 아이템 수정 삭제, 아이템이미지 수정 삭제, 아이템 옵션 수정삭제
 }
