@@ -17,7 +17,7 @@ class ItemController (
         @RequestParam description: String,
         @RequestParam price: Long,
         @RequestParam stock: Long,
-        @RequestParam options: List<String>,
+        @RequestParam options: List<String>?,
         @RequestPart("files", required = false) files: List<MultipartFile>
     ) {
         val itemData = CreateItemRequest(name, description, price, stock, options)

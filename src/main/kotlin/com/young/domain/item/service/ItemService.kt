@@ -36,12 +36,8 @@ class ItemService (
         )
         itemRepository.save(item)
 
-        for (option in request.options) {
-            val itemOption = ItemOption(
-                item = item,
-                name = option
-            )
-            itemOptionRepository.save(itemOption)
+        request.options?.takeIf { it.isNotEmpty() }?.forEach { option ->
+            itemOptionRepository.save(ItemOption(item = item, name = option))
         }
 
         for (file in files) {

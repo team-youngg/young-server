@@ -5,5 +5,5 @@ data class CreateItemRequest(
     val description: String,
     val price: Long,
     val stock: Long,
-    val options: List<String>
+    val options: List<String>? = emptyList()
 )
