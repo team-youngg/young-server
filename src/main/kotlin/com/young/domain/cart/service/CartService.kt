@@ -8,6 +8,7 @@ import com.young.domain.cart.error.CartError
 import com.young.domain.cart.repository.CartItemRepository
 import com.young.domain.cart.repository.CartRepository
 import com.young.domain.item.error.ItemError
+import com.young.domain.item.repository.ItemOptionRepository
 import com.young.domain.item.repository.ItemRepository
 import com.young.global.exception.CustomException
 import com.young.global.security.SecurityHolder
@@ -22,6 +23,7 @@ class CartService (
     private val securityHolder: SecurityHolder,
     private val cartItemRepository: CartItemRepository,
     private val itemRepository: ItemRepository,
+    private val itemOptionRepository: ItemOptionRepository,
 ) {
     @Transactional
     fun createCartItem(request: CreateCartRequest) {
@@ -31,11 +33,14 @@ class CartService (
         val item = itemRepository.findByIdOrNull(request.itemId) ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
 
         if (cartItemRepository.existsByCartAndItem(cart, item)) throw CustomException(CartError.CART_ITEM_DUPLICATED)
+        if (request.option != null && !itemOptionRepository.existsByItemAndName(item, request.option))
+            throw CustomException(ItemError.OPTION_NOT_FOUND)
 
         val cartItem = CartItem(
             cart = cart,
             item = item,
-            amount = request.amount
+            amount = request.amount,
+            itemOption = request.option,
         )
         cartItemRepository.save(cartItem)
     }
@@ -45,7 +50,11 @@ class CartService (
         val cartItem = cartItemRepository.findByIdOrNull(request.cartItemId)
             ?: throw CustomException(CartError.CART_ITEM_NOT_FOUND)
 
+        if (request.option != null && !itemOptionRepository.existsByItemAndName(cartItem.item, request.option))
+            throw CustomException(ItemError.OPTION_NOT_FOUND)
+
         cartItem.amount = request.amount ?: cartItem.amount
+        cartItem.itemOption = request.option ?: cartItem.itemOption
         cartItemRepository.save(cartItem)
     }
 

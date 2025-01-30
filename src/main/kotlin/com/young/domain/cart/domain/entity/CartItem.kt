@@ -21,4 +21,7 @@ class CartItem (
 
     @Column(nullable = false)
     var amount: Long,
+
+    @Column(nullable = true, name = "item_option")
+    var itemOption: String? = null,
 ) : BaseEntity()
