@@ -17,8 +17,8 @@ class OrderItem (
     @Column(name = "count", nullable = false)
     var count: Long,
 
-    @Column(name = "option", nullable = false)
-    var option: String,
+    @Column(name = "option", nullable = true)
+    var option: String?,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id", nullable = false)

@@ -1,7 +1,7 @@
 package com.young.domain.order.dto.request
 
-data class CreateOrderOneRequest(
+data class OrderOneRequest(
     val itemId: Long,
-    val amount: Long,
+    val count: Long,
     val option: String?
 )
