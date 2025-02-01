@@ -6,7 +6,7 @@ data class CartItemResponse(
     val id: Long,
     val item: CartItemItemResponse,
     val option: String?,
-    val amount: Long
+    val count: Long
 ) {
     companion object {
         fun of(cartItem: CartItem): CartItemResponse {
@@ -14,7 +14,7 @@ data class CartItemResponse(
                 id = cartItem.id!!,
                 item = CartItemItemResponse.of(cartItem.item),
                 option = cartItem.itemOption,
-                amount = cartItem.amount
+                count = cartItem.count
             )
         }
     }

@@ -39,7 +39,7 @@ class CartService (
         val cartItem = CartItem(
             cart = cart,
             item = item,
-            amount = request.amount,
+            count = request.amount,
             itemOption = request.option,
         )
         cartItemRepository.save(cartItem)
@@ -53,7 +53,7 @@ class CartService (
         if (request.option != null && !itemOptionRepository.existsByItemAndName(cartItem.item, request.option))
             throw CustomException(ItemError.OPTION_NOT_FOUND)
 
-        cartItem.amount = request.amount ?: cartItem.amount
+        cartItem.count = request.amount ?: cartItem.count
         cartItem.itemOption = request.option ?: cartItem.itemOption
         cartItemRepository.save(cartItem)
     }

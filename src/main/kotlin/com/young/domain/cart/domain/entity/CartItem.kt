@@ -19,8 +19,8 @@ class CartItem (
     @JoinColumn(name = "cart_id")
     val cart: Cart,
 
-    @Column(nullable = false)
-    var amount: Long,
+    @Column(nullable = false, name = "count")
+    var count: Long,
 
     @Column(nullable = true, name = "item_option")
     var itemOption: String? = null,
