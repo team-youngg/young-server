@@ -9,5 +9,5 @@ data class PaymentResponse(
     val status: String?,
     val method: String?,
     val totalAmount: Int?,
-    val receipt: String?
+//    val receipt: String?
 )
