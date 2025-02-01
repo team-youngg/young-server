@@ -44,7 +44,7 @@ class PaymentService (
             .bodyToMono(String::class.java)
             .block() ?: throw CustomException(PaymentError.API_ERROR, "No response")
 
-        println("Toss API 응답 데이터: $response")
+        println("🔎 Toss API 응답 데이터: $response")
 
         return objectMapper.readValue(response, PaymentResponse::class.java)
     }

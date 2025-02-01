@@ -16,8 +16,8 @@ class SwaggerConfig {
         return OpenAPI()
             .info(
                 Info()
-                    .title("kotlin jwt")
-                    .description("kotlin jwt study api")
+                    .title("Young")
+                    .description("Young한 쇼핑몰의 api")
                     .version("v1.0.0")
             ).addSecurityItem(SecurityRequirement().addList("Authorization"))
             .components(
