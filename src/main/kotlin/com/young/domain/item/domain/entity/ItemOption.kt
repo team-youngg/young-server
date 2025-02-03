@@ -1,5 +1,7 @@
 package com.young.domain.item.domain.entity
 
+import com.young.domain.item.domain.enums.ItemColor
+import com.young.domain.item.domain.enums.ItemSize
 import com.young.global.common.BaseEntity
 import jakarta.persistence.*
 
@@ -13,6 +15,12 @@ class ItemOption (
     @JoinColumn(name = "item_id", nullable = false)
     val item: Item,
 
+    @Enumerated(EnumType.STRING)
+    var color: ItemColor,
+
+    @Enumerated(EnumType.STRING)
+    var size: ItemSize,
+
     @Column(nullable = false)
-    val name: String
+    var stock: Long,
 ) : BaseEntity()
