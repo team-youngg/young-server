@@ -1,18 +1,12 @@
 package com.young.domain.item.service
 
-import com.young.domain.item.domain.entity.ItemImage
-import com.young.domain.item.domain.entity.Item
-import com.young.domain.item.domain.entity.ItemColor
-import com.young.domain.item.domain.entity.ItemOption
+import com.young.domain.item.domain.entity.*
 import com.young.domain.item.dto.request.CreateItemRequest
 import com.young.domain.item.dto.request.UpdateStockRequest
 import com.young.domain.item.dto.response.ImageResponse
 import com.young.domain.item.dto.response.ItemResponse
 import com.young.domain.item.error.ItemError
-import com.young.domain.item.repository.ItemColorRepository
-import com.young.domain.item.repository.ItemImageRepository
-import com.young.domain.item.repository.ItemOptionRepository
-import com.young.domain.item.repository.ItemRepository
+import com.young.domain.item.repository.*
 import com.young.global.exception.CustomException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Pageable
@@ -31,6 +25,8 @@ class ItemService (
     private val itemImageRepository: ItemImageRepository,
     private val itemOptionRepository: ItemOptionRepository,
     private val itemColorRepository: ItemColorRepository,
+    private val categoryRepository: CategoryRepository,
+    private val itemCategoryRepository: ItemCategoryRepository,
 ) {
     @Transactional
     fun createItem(request: CreateItemRequest) {
@@ -41,6 +37,14 @@ class ItemService (
             detail = request.detail,
         )
         itemRepository.save(item)
+
+        if (!categoryRepository.existsById(request.categoryId)) throw CustomException(ItemError.CATEGORY_NOT_FOUND)
+        val itemCategory = ItemCategory(
+            item = item,
+            categoryId = request.categoryId,
+        )
+
+        itemCategoryRepository.save(itemCategory)
 
         val itemImages = request.images.map { imageUrl ->
             ItemImage(url = imageUrl, item = item)
@@ -56,8 +60,6 @@ class ItemService (
             )
         }
         itemOptionRepository.saveAll(itemOptions)
-
-        // TODO 카테고리 저장
     }
 
     @Transactional
@@ -118,5 +120,10 @@ class ItemService (
         } else {
             return itemColorRepository.findByColorAndHex(color, hex)!!
         }
+    }
+
+    @Transactional
+    fun createCategory() {
+        // TODO 카테고리 생성(어드민일걸?)
     }
 }
