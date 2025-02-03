@@ -13,18 +13,11 @@ import org.springframework.web.multipart.MultipartFile
 class ItemController (
     private val itemService: ItemService
 ) {
-    @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    fun createItem(
-        @RequestParam name: String,
-        @RequestParam description: String,
-        @RequestParam price: Long,
-        @RequestParam stock: Long,
-        @RequestParam options: List<String>?,
-        @RequestPart("files", required = false) files: List<MultipartFile>
-    ) {
-        val itemData = CreateItemRequest(name, description, price, stock, options)
-        itemService.createItem(itemData, files)
-    }
+    @PostMapping
+    fun createItem(@RequestBody request: CreateItemRequest) = itemService.createItem(request)
+
+    @PostMapping("/images", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    fun uploadImage(@RequestPart image: MultipartFile) = itemService.uploadImage(image)
 
     @GetMapping("/{itemId}")
     fun getItem(@PathVariable itemId: Long) = itemService.getItem(itemId)
