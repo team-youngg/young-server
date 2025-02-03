@@ -3,8 +3,8 @@ package com.young.domain.item.domain.entity
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "images")
-class Image (
+@Table(name = "item_images")
+class ItemImage (
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
