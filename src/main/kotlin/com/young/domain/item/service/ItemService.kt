@@ -2,12 +2,14 @@ package com.young.domain.item.service
 
 import com.young.domain.item.domain.entity.ItemImage
 import com.young.domain.item.domain.entity.Item
+import com.young.domain.item.domain.entity.ItemColor
 import com.young.domain.item.domain.entity.ItemOption
 import com.young.domain.item.dto.request.CreateItemRequest
 import com.young.domain.item.dto.request.UpdateStockRequest
 import com.young.domain.item.dto.response.ImageResponse
 import com.young.domain.item.dto.response.ItemResponse
 import com.young.domain.item.error.ItemError
+import com.young.domain.item.repository.ItemColorRepository
 import com.young.domain.item.repository.ItemImageRepository
 import com.young.domain.item.repository.ItemOptionRepository
 import com.young.domain.item.repository.ItemRepository
@@ -27,7 +29,8 @@ class ItemService (
     @Value("\${spring.upload.dir}") private val uploadDir: String,
     private val itemRepository: ItemRepository,
     private val itemImageRepository: ItemImageRepository,
-    private val itemOptionRepository: ItemOptionRepository
+    private val itemOptionRepository: ItemOptionRepository,
+    private val itemColorRepository: ItemColorRepository,
 ) {
     @Transactional
     fun createItem(request: CreateItemRequest) {
@@ -47,13 +50,14 @@ class ItemService (
         val itemOptions = request.options.map { option ->
             ItemOption(
                 item = item,
-                color = option.color,
+                color = createColor(option.color, option.hex),
                 size = option.size,
                 stock = 0
             )
         }
         itemOptionRepository.saveAll(itemOptions)
 
+        // TODO 카테고리 저장
     }
 
     @Transactional
@@ -101,5 +105,18 @@ class ItemService (
             .path(filename)
             .toUriString()
         )
+    }
+
+    @Transactional
+    fun createColor(color: String, hex: String) : ItemColor {
+        if (!itemColorRepository.existsByColorAndHex(color, hex)) {
+            val itemColor = ItemColor(
+                color = color,
+                hex = hex,
+            )
+            return itemColorRepository.save(itemColor)
+        } else {
+            return itemColorRepository.findByColorAndHex(color, hex)!!
+        }
     }
 }
