@@ -18,6 +18,5 @@ class Item (
     @Column(nullable = false)
     var price: Long,
 
-    @Column(nullable = false)
-    var stock: Long,
+    var detail: String,
 ) : BaseEntity()
