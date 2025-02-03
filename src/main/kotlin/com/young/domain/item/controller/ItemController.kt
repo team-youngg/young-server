@@ -1,6 +1,7 @@
 package com.young.domain.item.controller
 
 import com.young.domain.item.dto.request.CreateItemRequest
+import com.young.domain.item.dto.request.UpdateStockRequest
 import com.young.domain.item.service.ItemService
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
@@ -24,6 +25,10 @@ class ItemController (
 
     @GetMapping
     fun getItems(@PageableDefault pageable: Pageable) = itemService.getItems(pageable)
+
+    @PatchMapping("/{itemOptionId}")
+    fun updateStock(@RequestBody request: UpdateStockRequest, @PathVariable itemOptionId: Long)
+    = itemService.updateStock(request, itemOptionId)
 
     // TODO 아이템 수정 삭제, 아이템이미지 수정 삭제, 아이템 옵션 수정삭제
 }
