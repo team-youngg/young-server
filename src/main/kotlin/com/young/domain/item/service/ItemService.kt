@@ -1,12 +1,14 @@
 package com.young.domain.item.service
 
-import com.young.domain.item.domain.entity.Image
+import com.young.domain.item.domain.entity.ItemImage
 import com.young.domain.item.domain.entity.Item
 import com.young.domain.item.domain.entity.ItemOption
 import com.young.domain.item.dto.request.CreateItemRequest
+import com.young.domain.item.dto.request.UpdateStockRequest
+import com.young.domain.item.dto.response.ImageResponse
 import com.young.domain.item.dto.response.ItemResponse
 import com.young.domain.item.error.ItemError
-import com.young.domain.item.repository.ImageRepository
+import com.young.domain.item.repository.ItemImageRepository
 import com.young.domain.item.repository.ItemOptionRepository
 import com.young.domain.item.repository.ItemRepository
 import com.young.global.exception.CustomException
@@ -24,47 +26,65 @@ import java.util.*
 class ItemService (
     @Value("\${spring.upload.dir}") private val uploadDir: String,
     private val itemRepository: ItemRepository,
-    private val imageRepository: ImageRepository,
+    private val itemImageRepository: ItemImageRepository,
     private val itemOptionRepository: ItemOptionRepository
 ) {
     @Transactional
-    fun createItem(request: CreateItemRequest, files: List<MultipartFile>) {
+    fun createItem(request: CreateItemRequest) {
         val item = Item(
             name = request.name,
             description = request.description,
             price = request.price,
-            stock = request.stock,
+            detail = request.detail,
         )
         itemRepository.save(item)
 
-        request.options?.takeIf { it.isNotEmpty() }?.forEach { option ->
-            itemOptionRepository.save(ItemOption(item = item, name = option))
+        val itemImages = request.images.map { imageUrl ->
+            ItemImage(url = imageUrl, item = item)
         }
+        itemImageRepository.saveAll(itemImages)
 
-        for (file in files) {
-            uploadImage(file, item.id!!)
+        val itemOptions = request.options.map { option ->
+            ItemOption(
+                item = item,
+                color = option.color,
+                size = option.size,
+                stock = 0
+            )
         }
+        itemOptionRepository.saveAll(itemOptions)
+
+    }
+
+    @Transactional
+    fun updateStock(request: UpdateStockRequest, itemOptionId: Long) {
+        val itemOption = itemOptionRepository.findByIdOrNull(itemOptionId)
+            ?: throw CustomException(ItemError.OPTION_NOT_FOUND)
+
+        if (request.isPlus) itemOption.stock += request.count
+        else itemOption.stock -= request.count
+
+        itemOptionRepository.save(itemOption)
     }
 
     fun getItem(id: Long): ItemResponse {
         val item = itemRepository.findByIdOrNull(id) ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
-        val images = getImages(id)
-        val options = getOptions(item)
-
+        val images = itemImageRepository.findAllByItem(item).map { it.url }
+        val options = itemOptionRepository.findAllByItem(item)
         return ItemResponse.of(item, images, options)
     }
 
-    fun getItems(pageable: Pageable): List<ItemResponse> {
+    fun getItems(pageable: Pageable) : List<ItemResponse> {
         val items = itemRepository.findAllByOrderByCreatedAtDesc(pageable).toList()
-
         return items.map { item ->
-            val image = getImages(item.id!!)
-            val options = getOptions(item)
-            ItemResponse.of(item, image, options)
+            val images = itemImageRepository.findAllByItem(item).map { it.url }
+            val options = itemOptionRepository.findAllByItem(item)
+            ItemResponse.of(item, images, options)
         }
     }
 
-    fun uploadImage(file: MultipartFile, itemId: Long) {
+    @Transactional
+    fun uploadImage(file: MultipartFile) : ImageResponse {
         val filename = "${UUID.randomUUID()}-${file.originalFilename}"
 
         val directory = File(uploadDir)
@@ -75,25 +95,11 @@ class ItemService (
         val targetFile = File(directory, filename)
         file.transferTo(targetFile)
 
-        val item = itemRepository.findByIdOrNull(itemId) ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
-
-        val image = Image(url = filename, item = item)
-        imageRepository.save(image)
-    }
-
-    fun getImages(itemId: Long): List<String> {
-        val images = imageRepository.findAllByItemId(itemId)
-
-        return images.map { image ->
+        return ImageResponse(
             ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/uploads/")
-                .path(image.url)
-                .toUriString()
-        }
-    }
-
-    fun getOptions(item: Item): List<String> {
-        val options = itemOptionRepository.findAllByItem(item)
-        return options.map { options -> options.name }
+            .path("/uploads/")
+            .path(filename)
+            .toUriString()
+        )
     }
 }
