@@ -36,7 +36,8 @@ class OAuthService (
         val user = User(
             email = googleUser.email,
             username = googleUser.username,
-            role = UserRole.USER
+            role = UserRole.USER,
+            avatar = googleUser.avatar
         )
 
         if (!userRepository.existsByEmail(googleUser.email)) {
@@ -98,7 +99,8 @@ class OAuthService (
 
                 GoogleUserResponse(
                     email = jsonNode["email"].asText(),
-                    username = jsonNode["name"].asText()
+                    username = jsonNode["name"].asText(),
+                    avatar = jsonNode["picture"].asText(),
                 )
             }
             .block()!!

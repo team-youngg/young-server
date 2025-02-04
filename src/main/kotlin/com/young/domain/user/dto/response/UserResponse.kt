@@ -5,11 +5,13 @@ import com.young.domain.user.domain.entity.User
 data class UserResponse(
     val email: String,
     val username: String,
+    val avatar: String?
 ) {
     companion object {
         fun of(user: User) = UserResponse(
             email = user.email,
             username = user.username,
+            avatar = user.avatar,
         )
     }
 }

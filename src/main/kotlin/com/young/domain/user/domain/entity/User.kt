@@ -21,6 +21,7 @@ class User (
 
     @Column(name = "email", nullable = false, unique = true)
     val email: String,
-) : BaseEntity()
 
-// TODO avatar 추가(구글꺼)
+    @Column(name = "avatar", nullable = true)
+    val avatar: String?
+) : BaseEntity()
