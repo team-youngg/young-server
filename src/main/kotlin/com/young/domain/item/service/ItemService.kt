@@ -4,6 +4,7 @@ import com.young.domain.item.domain.entity.*
 import com.young.domain.item.dto.request.CreateItemRequest
 import com.young.domain.item.dto.request.UpdateStockRequest
 import com.young.domain.item.dto.response.ImageResponse
+import com.young.domain.item.dto.response.ItemDetailResponse
 import com.young.domain.item.dto.response.ItemResponse
 import com.young.domain.item.error.ItemError
 import com.young.domain.item.repository.*
@@ -24,9 +25,9 @@ class ItemService (
     private val itemRepository: ItemRepository,
     private val itemImageRepository: ItemImageRepository,
     private val itemOptionRepository: ItemOptionRepository,
-    private val itemColorRepository: ItemColorRepository,
     private val categoryRepository: CategoryRepository,
     private val itemCategoryRepository: ItemCategoryRepository,
+    private val itemOptionValueRepository: ItemOptionValueRepository
 ) {
     @Transactional
     fun createItem(request: CreateItemRequest) {
@@ -43,7 +44,6 @@ class ItemService (
             item = item,
             categoryId = request.categoryId,
         )
-
         itemCategoryRepository.save(itemCategory)
 
         val itemImages = request.images.map { imageUrl ->
@@ -51,15 +51,24 @@ class ItemService (
         }
         itemImageRepository.saveAll(itemImages)
 
-        val itemOptions = request.options.map { option ->
-            ItemOption(
-                item = item,
-                color = createColor(option.color, option.hex),
-                size = option.size,
-                stock = 0
+        request.options.forEach { optionRequest ->
+            val itemOption = itemOptionRepository.save(
+                ItemOption(
+                    item = item,
+                    stock = 0
+                )
             )
+
+            val optionValues = optionRequest.optionValues.map { optionValueRequest ->
+                ItemOptionValue(
+                    itemOption = itemOption,
+                    type = optionValueRequest.type,
+                    value = optionValueRequest.value,
+                    detail = optionValueRequest.detail
+                )
+            }
+            itemOptionValueRepository.saveAll(optionValues)
         }
-        itemOptionRepository.saveAll(itemOptions)
     }
 
     @Transactional
@@ -73,11 +82,12 @@ class ItemService (
         itemOptionRepository.save(itemOption)
     }
 
-    fun getItem(id: Long): ItemResponse {
+    fun getItem(id: Long): ItemDetailResponse {
         val item = itemRepository.findByIdOrNull(id) ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
         val images = itemImageRepository.findAllByItem(item).map { it.url }
         val options = itemOptionRepository.findAllByItem(item)
-        return ItemResponse.of(item, images, options)
+        val optionValues = options.flatMap { itemOptionValueRepository.findAllByItemOption(it) }
+        return ItemDetailResponse.of(item, images, options, optionValues)
     }
 
     fun getItems(pageable: Pageable) : List<ItemResponse> {
@@ -85,7 +95,8 @@ class ItemService (
         return items.map { item ->
             val images = itemImageRepository.findAllByItem(item).map { it.url }
             val options = itemOptionRepository.findAllByItem(item)
-            ItemResponse.of(item, images, options)
+            val optionValues = options.flatMap { itemOptionValueRepository.findAllByItemOption(it) }
+            ItemResponse.of(item, images, options, optionValues)
         }
     }
 
@@ -107,19 +118,6 @@ class ItemService (
             .path(filename)
             .toUriString()
         )
-    }
-
-    @Transactional
-    fun createColor(color: String, hex: String) : ItemColor {
-        if (!itemColorRepository.existsByColorAndHex(color, hex)) {
-            val itemColor = ItemColor(
-                color = color,
-                hex = hex,
-            )
-            return itemColorRepository.save(itemColor)
-        } else {
-            return itemColorRepository.findByColorAndHex(color, hex)!!
-        }
     }
 
     @Transactional
