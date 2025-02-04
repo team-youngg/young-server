@@ -1,21 +1,14 @@
 package com.young.domain.item.dto.response
 
-import com.young.domain.item.domain.entity.ItemOption
-import com.young.domain.item.domain.enums.ItemSize
+import com.young.domain.item.domain.entity.ItemOptionValue
 
 data class OptionResponse (
-    val color: String,
-    val hex: String,
-    val size: ItemSize,
-    val stock: Long
+    val optionValues: List<ItemOptionValueResponse>
 ) {
     companion object {
-        fun of(itemOption: ItemOption) : OptionResponse {
+        fun of(itemOptionValues: List<ItemOptionValue>) : OptionResponse {
             return OptionResponse(
-                color = itemOption.color.color,
-                hex = itemOption.color.hex,
-                size = itemOption.size,
-                stock = itemOption.stock
+                optionValues = itemOptionValues.map{ ItemOptionValueResponse.of(it) }
             )
         }
     }
