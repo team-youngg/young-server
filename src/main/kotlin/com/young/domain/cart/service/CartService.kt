@@ -13,6 +13,7 @@ import com.young.domain.item.error.ItemError
 import com.young.domain.item.repository.ItemOptionRepository
 import com.young.domain.item.repository.ItemOptionValueRepository
 import com.young.domain.item.repository.ItemRepository
+import com.young.domain.user.error.UserError
 import com.young.global.exception.CustomException
 import com.young.global.security.SecurityHolder
 import org.springframework.data.domain.Pageable
@@ -32,7 +33,7 @@ class CartService (
     @Transactional
     fun createCartItem(request: CreateCartRequest) {
         // TODO 이미 있는 아이템 && 옵션이면 재고추가
-        val user = securityHolder.user
+        val user = securityHolder.user ?: throw CustomException(UserError.USER_NOT_FOUND)
         val cart = cartRepository.findByUser(user) ?: throw CustomException(CartError.CART_NOT_FOUND)
         val itemOption = itemOptionRepository.findByIdOrNull(request.optionId)
             ?: throw CustomException(ItemError.OPTION_NOT_FOUND)
@@ -66,7 +67,7 @@ class CartService (
 
     @Transactional
     fun getCartItems(pageable: Pageable): List<CartItemResponse> {
-        val user = securityHolder.user
+        val user = securityHolder.user ?: throw CustomException(UserError.USER_NOT_FOUND)
         val cart = cartRepository.findByUser(user) ?: throw CustomException(CartError.CART_NOT_FOUND)
         val cartItems = cartItemRepository.findAllByCart(cart, pageable)
 
