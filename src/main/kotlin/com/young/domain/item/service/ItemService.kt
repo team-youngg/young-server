@@ -89,14 +89,21 @@ class ItemService (
     }
 
     fun getItem(id: Long): ItemDetailResponse {
+        val user = securityHolder.user
         val item = itemRepository.findByIdOrNull(id) ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
         val itemElements = itemUtil.getItemElements(item)
+        val wishItemIds: Set<Long> = if (user != null) {
+            wishRepository.findItemIdsByUser(user).toSet()
+        } else {
+            emptySet()
+        }
         return ItemDetailResponse.of(
             item,
             itemElements.images,
             itemElements.options,
             itemElements.optionValues,
-            itemElements.categories
+            itemElements.categories,
+            isWish = user != null && item.id in wishItemIds
         )
     }
 
