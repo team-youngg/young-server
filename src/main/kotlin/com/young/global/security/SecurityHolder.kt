@@ -12,7 +12,8 @@ import org.springframework.stereotype.Component
 class SecurityHolder(
     private val userRepository: UserRepository,
 ) {
-    val user: User
-        get() = userRepository.findByEmail(SecurityContextHolder.getContext().authentication.name)
-            ?: throw CustomException(UserError.USER_NOT_FOUND)
+    val user: User?
+        get() = SecurityContextHolder.getContext().authentication?.name?.let { email ->
+            userRepository.findByEmail(email)
+        }
 }
