@@ -53,22 +53,14 @@ class OAuthService (
 
     @Transactional
     fun getGoogleAccessToken(request: GoogleLoginRequest): String {
-        val params = mapOf(
-            "code" to request.code,
-            "client_id" to googleProperties.clientId,
-            "client_secret" to googleProperties.clientSecret,
-            "redirect_uri" to request.redirectUri,
-            "grant_type" to "authorization_code",
-            "scope" to "email profile openid"
-        )
-
         val requestUrl = "https://oauth2.googleapis.com/token"
+        val redirectUri = "http://localhost:3000/auth/google/callback"
 
         val formData: MultiValueMap<String, String> = LinkedMultiValueMap()
         formData.add("code", request.code)
         formData.add("client_id", googleProperties.clientId)
         formData.add("client_secret", googleProperties.clientSecret)
-        formData.add("redirect_uri", request.redirectUri)
+        formData.add("redirect_uri", redirectUri)
         formData.add("grant_type", "authorization_code")
 
         return webClient.build()
