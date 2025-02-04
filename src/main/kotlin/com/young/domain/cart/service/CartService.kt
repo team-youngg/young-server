@@ -9,11 +9,14 @@ import com.young.domain.cart.error.CartError
 import com.young.domain.cart.repository.CartItemOptionRepository
 import com.young.domain.cart.repository.CartItemRepository
 import com.young.domain.cart.repository.CartRepository
+import com.young.domain.item.dto.response.ItemResponse
 import com.young.domain.item.error.ItemError
 import com.young.domain.item.repository.ItemOptionRepository
 import com.young.domain.item.repository.ItemOptionValueRepository
 import com.young.domain.item.repository.ItemRepository
+import com.young.domain.item.util.ItemUtil
 import com.young.domain.user.error.UserError
+import com.young.domain.wish.repository.WishRepository
 import com.young.global.exception.CustomException
 import com.young.global.security.SecurityHolder
 import org.springframework.data.domain.Pageable
@@ -29,6 +32,8 @@ class CartService (
     private val itemOptionRepository: ItemOptionRepository,
     private val cartItemOptionRepository: CartItemOptionRepository,
     private val itemOptionValueRepository: ItemOptionValueRepository,
+    private val itemUtil: ItemUtil,
+    private val wishRepository: WishRepository,
 ) {
     @Transactional
     fun createCartItem(request: CreateCartRequest) {
@@ -75,7 +80,22 @@ class CartService (
             val cartItemOptions = cartItemOptionRepository.findByCartItem(cartItem)
             val itemOptionValues = cartItemOptions.map { cartItemOption ->
                 val itemOptionValue = itemOptionValueRepository.findAllByItemOption(cartItemOption.itemOption)
-                CartItemResponse.of(cartItemOption, itemOptionValue)
+                val item = cartItemOption.cartItem.item
+                val itemElements = itemUtil.getItemElements(item)
+                val wishItemIds: Set<Long> = if (user != null) {
+                    wishRepository.findItemIdsByUser(user).toSet()
+                } else {
+                    emptySet()
+                }
+                val itemResponse = ItemResponse.of(
+                    item,
+                    itemElements.images,
+                    itemElements.options,
+                    itemElements.optionValues,
+                    itemElements.categories,
+                    isWish = item.id in wishItemIds
+                )
+                CartItemResponse.of(cartItemOption, itemOptionValue, itemResponse)
             }
             itemOptionValues
         }.flatten()
