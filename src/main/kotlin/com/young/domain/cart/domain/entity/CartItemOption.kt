@@ -1,21 +1,22 @@
 package com.young.domain.cart.domain.entity
 
-import com.young.domain.item.domain.entity.Item
+import com.young.domain.item.domain.entity.ItemOption
 import com.young.global.common.BaseEntity
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "cart_items")
-class CartItem (
+class CartItemOption (
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     val id: Long? = null,
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "item_id")
-    val item: Item,
+    @Column(nullable = false, name = "count")
+    var count: Long,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cart_id")
-    val cart: Cart,
+    @JoinColumn(name = "cart_item_id")
+    val cartItem: CartItem,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_option_id")
+    var itemOption: ItemOption,
 ) : BaseEntity()
