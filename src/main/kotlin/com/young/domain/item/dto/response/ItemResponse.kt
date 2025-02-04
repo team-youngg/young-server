@@ -20,16 +20,8 @@ data class ItemResponse(
                 description = item.description,
                 price = item.price,
                 options = options.map { itemOption ->
-                    OptionResponse(
-                        optionValues = optionValues
-                            .filter { it.itemOption.id == itemOption.id }
-                            .map { optionValue ->
-                                ItemOptionValueResponse(
-                                    type = optionValue.type,
-                                    value = optionValue.value,
-                                    detail = optionValue.detail
-                                )
-                            }
+                    OptionResponse.of(
+                        optionValues.filter { it.itemOption.id == itemOption.id }
                     )
                 },
                 images = images,
