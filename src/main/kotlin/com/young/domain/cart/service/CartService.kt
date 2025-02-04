@@ -25,7 +25,6 @@ class CartService (
     private val cartRepository: CartRepository,
     private val securityHolder: SecurityHolder,
     private val cartItemRepository: CartItemRepository,
-    private val itemRepository: ItemRepository,
     private val itemOptionRepository: ItemOptionRepository,
     private val cartItemOptionRepository: CartItemOptionRepository,
     private val itemOptionValueRepository: ItemOptionValueRepository,
@@ -35,16 +34,14 @@ class CartService (
         // TODO 이미 있는 아이템 && 옵션이면 재고추가
         val user = securityHolder.user
         val cart = cartRepository.findByUser(user) ?: throw CustomException(CartError.CART_NOT_FOUND)
-        val item = itemRepository.findByIdOrNull(request.itemId) ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
         val itemOption = itemOptionRepository.findByIdOrNull(request.optionId)
             ?: throw CustomException(ItemError.OPTION_NOT_FOUND)
-        if (itemOption.item.id != item.id) throw CustomException(ItemError.ITEM_OPTION_NOT_MATCH)
         if (itemOption.stock == 0L) throw CustomException(ItemError.NO_STOCK)
         if (cartItemOptionRepository.existsByItemOption(itemOption)) throw CustomException(CartError.CART_ITEM_DUPLICATED)
 
         val cartItem = CartItem(
             cart = cart,
-            item = item,
+            item = itemOption.item,
         )
         cartItemRepository.save(cartItem)
 
