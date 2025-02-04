@@ -5,7 +5,7 @@ import com.young.domain.item.domain.entity.ItemOptionValue
 import com.young.domain.item.domain.enums.ItemOptionType
 import org.springframework.data.jpa.repository.JpaRepository
 
-interface ItemOptionValueRepository : JpaRepository<ItemOptionValue, Int> {
+interface ItemOptionValueRepository : JpaRepository<ItemOptionValue, Long> {
     fun findAllByItemOption(option: ItemOption): List<ItemOptionValue>
     fun findByTypeAndValue(type: ItemOptionType, value: String): ItemOptionValue?
 }
