@@ -1,5 +1,5 @@
 package com.young.domain.order.domain.enums
 
 enum class OrderStatus {
-    PAID, CHECKED, SHIPPING, COMPLETED
+    ORDERED, PAID, CHECKED, SHIPPING, COMPLETED
 }

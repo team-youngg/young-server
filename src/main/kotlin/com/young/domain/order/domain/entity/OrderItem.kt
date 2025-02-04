@@ -14,13 +14,10 @@ class OrderItem (
     @JoinColumn(name = "order_id", nullable = false)
     val order: Order,
 
-    @Column(name = "count", nullable = false)
-    var count: Long,
-
-    @Column(name = "option", nullable = true)
-    var option: String?,
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id", nullable = false)
-    val item: Item
+    val item: Item,
+
+    @Column(name = "price", nullable = false)
+    val price: Long
 ) : BaseEntity()
