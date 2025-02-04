@@ -9,7 +9,9 @@ import com.young.domain.item.dto.response.ItemResponse
 import com.young.domain.item.error.ItemError
 import com.young.domain.item.repository.*
 import com.young.domain.item.util.ItemUtil
+import com.young.domain.wish.repository.WishRepository
 import com.young.global.exception.CustomException
+import com.young.global.security.SecurityHolder
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
@@ -29,7 +31,9 @@ class ItemService (
     private val categoryRepository: CategoryRepository,
     private val itemCategoryRepository: ItemCategoryRepository,
     private val itemOptionValueRepository: ItemOptionValueRepository,
-    private val itemUtil: ItemUtil
+    private val itemUtil: ItemUtil,
+    private val securityHolder: SecurityHolder,
+    private val wishRepository: WishRepository
 ) {
     @Transactional
     fun createItem(request: CreateItemRequest) {
@@ -96,19 +100,30 @@ class ItemService (
         )
     }
 
-    fun getItems(pageable: Pageable) : List<ItemResponse> {
+    @Transactional
+    fun getItems(pageable: Pageable): List<ItemResponse> {
+        val user = securityHolder.user
+        val wishItemIds: Set<Long> = if (user != null) {
+            wishRepository.findItemIdsByUser(user).toSet()
+        } else {
+            emptySet()
+        }
         val items = itemRepository.findAllByOrderByCreatedAtDesc(pageable).toList()
+
         return items.map { item ->
             val itemElements = itemUtil.getItemElements(item)
+
             ItemResponse.of(
                 item,
                 itemElements.images,
                 itemElements.options,
                 itemElements.optionValues,
-                itemElements.categories
+                itemElements.categories,
+                isWish = user != null && item.id in wishItemIds
             )
         }
     }
+
 
     @Transactional
     fun uploadImage(file: MultipartFile) : ImageResponse {

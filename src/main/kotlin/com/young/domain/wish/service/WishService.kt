@@ -4,6 +4,7 @@ import com.young.domain.item.dto.response.ItemResponse
 import com.young.domain.item.error.ItemError
 import com.young.domain.item.repository.ItemRepository
 import com.young.domain.item.util.ItemUtil
+import com.young.domain.user.error.UserError
 import com.young.domain.wish.domain.entity.Wish
 import com.young.domain.wish.repository.WishRepository
 import com.young.global.exception.CustomException
@@ -22,7 +23,7 @@ class WishService (
     @Transactional
     fun updateWishItem(itemId: Long) {
         val item = itemRepository.findByIdOrNull(itemId) ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
-        val user = securityHolder.user
+        val user = securityHolder.user ?: throw CustomException(UserError.USER_NOT_FOUND)
         val wish = wishRepository.findByUserAndItem(user, item)
 
         if (wish != null) {
@@ -35,7 +36,7 @@ class WishService (
 
     @Transactional
     fun getWishList() : List<ItemResponse> {
-        val user = securityHolder.user
+        val user = securityHolder.user ?: throw CustomException(UserError.USER_NOT_FOUND)
         val wish = wishRepository.findByUser(user)
         val items = wish.map { it.item }
 
@@ -46,7 +47,8 @@ class WishService (
                 itemElements.images,
                 itemElements.options,
                 itemElements.optionValues,
-                itemElements.categories
+                itemElements.categories,
+                isWish = true
             )
         }
     }
