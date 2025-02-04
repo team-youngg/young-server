@@ -87,7 +87,9 @@ class ItemService (
         val images = itemImageRepository.findAllByItem(item).map { it.url }
         val options = itemOptionRepository.findAllByItem(item)
         val optionValues = options.flatMap { itemOptionValueRepository.findAllByItemOption(it) }
-        return ItemDetailResponse.of(item, images, options, optionValues)
+        val categories = getCategories(itemCategoryRepository.findByItem(item)?.categoryId
+            ?: throw CustomException(ItemError.CATEGORY_NOT_FOUND))
+        return ItemDetailResponse.of(item, images, options, optionValues, categories)
     }
 
     fun getItems(pageable: Pageable) : List<ItemResponse> {
@@ -96,7 +98,9 @@ class ItemService (
             val images = itemImageRepository.findAllByItem(item).map { it.url }
             val options = itemOptionRepository.findAllByItem(item)
             val optionValues = options.flatMap { itemOptionValueRepository.findAllByItemOption(it) }
-            ItemResponse.of(item, images, options, optionValues)
+            val categories = getCategories(itemCategoryRepository.findByItem(item)?.categoryId
+                ?: throw CustomException(ItemError.CATEGORY_NOT_FOUND))
+            ItemResponse.of(item, images, options, optionValues, categories)
         }
     }
 
@@ -123,5 +127,17 @@ class ItemService (
     @Transactional
     fun createCategory() {
         // TODO 카테고리 생성(어드민일걸?)
+    }
+
+    fun getCategories(categoryId: Long): List<Category> {
+        val categories = mutableListOf<Category>()
+        var currentCategory = categoryRepository.findById(categoryId).orElse(null)
+
+        while (currentCategory != null) {
+            categories.add(currentCategory)
+            currentCategory = currentCategory.parentId?.let { categoryRepository.findById(it).orElse(null) }
+        }
+
+        return categories
     }
 }

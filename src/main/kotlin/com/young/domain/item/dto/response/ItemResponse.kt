@@ -1,9 +1,6 @@
 package com.young.domain.item.dto.response
 
-import com.young.domain.item.domain.entity.Category
-import com.young.domain.item.domain.entity.Item
-import com.young.domain.item.domain.entity.ItemOption
-import com.young.domain.item.domain.entity.ItemOptionValue
+import com.young.domain.item.domain.entity.*
 
 data class ItemResponse(
     val id: Long,
@@ -13,7 +10,7 @@ data class ItemResponse(
     val options: List<OptionResponse>,
     val images: List<String>,
     val stock: Long,
-    val categories: List<CategoryResponse>,
+    val categories: List<String>,
 ) {
     companion object {
         fun of(item: Item, images: List<String>, options: List<ItemOption>, optionValues: List<ItemOptionValue>, categories: List<Category>): ItemResponse {
@@ -37,7 +34,7 @@ data class ItemResponse(
                 },
                 images = images,
                 stock = options.sumOf { it.stock },
-                categories = categories.map { CategoryResponse.of(it) },
+                categories = categories.map { it.name },
             )
         }
     }
