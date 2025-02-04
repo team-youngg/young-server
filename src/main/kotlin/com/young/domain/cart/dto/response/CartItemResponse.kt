@@ -6,7 +6,7 @@ import com.young.domain.item.domain.entity.ItemOptionValue
 data class CartItemResponse(
     val id: Long,
     val itemId: Long,
-    val options: CartItemOptionResponse // TODO id, count 추가
+    val options: CartItemOptionResponse
 ) {
     companion object {
         fun of(itemOption: CartItemOption, itemOptionValues: List<ItemOptionValue>): CartItemResponse {
