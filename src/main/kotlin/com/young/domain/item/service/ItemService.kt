@@ -8,6 +8,7 @@ import com.young.domain.item.dto.response.ItemDetailResponse
 import com.young.domain.item.dto.response.ItemResponse
 import com.young.domain.item.error.ItemError
 import com.young.domain.item.repository.*
+import com.young.domain.item.util.ItemUtil
 import com.young.global.exception.CustomException
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Pageable
@@ -27,7 +28,8 @@ class ItemService (
     private val itemOptionRepository: ItemOptionRepository,
     private val categoryRepository: CategoryRepository,
     private val itemCategoryRepository: ItemCategoryRepository,
-    private val itemOptionValueRepository: ItemOptionValueRepository
+    private val itemOptionValueRepository: ItemOptionValueRepository,
+    private val itemUtil: ItemUtil
 ) {
     @Transactional
     fun createItem(request: CreateItemRequest) {
@@ -84,23 +86,27 @@ class ItemService (
 
     fun getItem(id: Long): ItemDetailResponse {
         val item = itemRepository.findByIdOrNull(id) ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
-        val images = itemImageRepository.findAllByItem(item).map { it.url }
-        val options = itemOptionRepository.findAllByItem(item)
-        val optionValues = options.flatMap { itemOptionValueRepository.findAllByItemOption(it) }
-        val categories = getCategories(itemCategoryRepository.findByItem(item)?.categoryId
-            ?: throw CustomException(ItemError.CATEGORY_NOT_FOUND))
-        return ItemDetailResponse.of(item, images, options, optionValues, categories)
+        val itemElements = itemUtil.getItemElements(item)
+        return ItemDetailResponse.of(
+            item,
+            itemElements.images,
+            itemElements.options,
+            itemElements.optionValues,
+            itemElements.categories
+        )
     }
 
     fun getItems(pageable: Pageable) : List<ItemResponse> {
         val items = itemRepository.findAllByOrderByCreatedAtDesc(pageable).toList()
         return items.map { item ->
-            val images = itemImageRepository.findAllByItem(item).map { it.url }
-            val options = itemOptionRepository.findAllByItem(item)
-            val optionValues = options.flatMap { itemOptionValueRepository.findAllByItemOption(it) }
-            val categories = getCategories(itemCategoryRepository.findByItem(item)?.categoryId
-                ?: throw CustomException(ItemError.CATEGORY_NOT_FOUND))
-            ItemResponse.of(item, images, options, optionValues, categories)
+            val itemElements = itemUtil.getItemElements(item)
+            ItemResponse.of(
+                item,
+                itemElements.images,
+                itemElements.options,
+                itemElements.optionValues,
+                itemElements.categories
+            )
         }
     }
 
@@ -127,17 +133,5 @@ class ItemService (
     @Transactional
     fun createCategory() {
         // TODO 카테고리 생성(어드민일걸?)
-    }
-
-    fun getCategories(categoryId: Long): List<Category> {
-        val categories = mutableListOf<Category>()
-        var currentCategory = categoryRepository.findById(categoryId).orElse(null)
-
-        while (currentCategory != null) {
-            categories.add(currentCategory)
-            currentCategory = currentCategory.parentId?.let { categoryRepository.findById(it).orElse(null) }
-        }
-
-        return categories
     }
 }
