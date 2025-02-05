@@ -65,6 +65,8 @@ class CartService (
         val cartItemOption = cartItemOptionRepository.findByIdOrNull(cartItemOptionId)
             ?: throw CustomException(ItemError.OPTION_NOT_FOUND)
 
+        if (cartItemOption.count + request.count < 0) throw CustomException(CartError.COUNT_UNDER_ZERO)
+
         cartItemOption.count += request.count
         cartItemOptionRepository.save(cartItemOption)
 

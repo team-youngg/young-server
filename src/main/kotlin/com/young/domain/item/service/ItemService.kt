@@ -83,6 +83,8 @@ class ItemService (
         val itemOption = itemOptionRepository.findByIdOrNull(itemOptionId)
             ?: throw CustomException(ItemError.OPTION_NOT_FOUND)
 
+        if (itemOption.stock + request.count < 0) throw CustomException(ItemError.STOCK_UNDER_ZERO)
+
         itemOption.stock += request.count
         itemOptionRepository.save(itemOption)
 
