@@ -6,6 +6,7 @@ import com.young.domain.item.dto.request.UpdateStockRequest
 import com.young.domain.item.dto.response.ImageResponse
 import com.young.domain.item.dto.response.ItemDetailResponse
 import com.young.domain.item.dto.response.ItemResponse
+import com.young.domain.item.dto.response.StockResponse
 import com.young.domain.item.error.ItemError
 import com.young.domain.item.repository.*
 import com.young.domain.item.util.ItemUtil
@@ -78,14 +79,14 @@ class ItemService (
     }
 
     @Transactional
-    fun updateStock(request: UpdateStockRequest, itemOptionId: Long) {
+    fun updateStock(request: UpdateStockRequest, itemOptionId: Long): StockResponse {
         val itemOption = itemOptionRepository.findByIdOrNull(itemOptionId)
             ?: throw CustomException(ItemError.OPTION_NOT_FOUND)
 
-        if (request.isPlus) itemOption.stock += request.count
-        else itemOption.stock -= request.count
-
+        itemOption.stock += request.count
         itemOptionRepository.save(itemOption)
+
+        return StockResponse(itemOption.stock)
     }
 
     fun getItem(id: Long): ItemDetailResponse {
