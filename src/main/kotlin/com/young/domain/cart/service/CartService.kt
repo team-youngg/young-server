@@ -64,9 +64,7 @@ class CartService (
         val cartItemOption = cartItemOptionRepository.findByIdOrNull(cartItemIdOption)
             ?: throw CustomException(ItemError.OPTION_NOT_FOUND)
 
-        if (request.isPlus) cartItemOption.count += request.count
-        else cartItemOption.count -= request.count
-
+        cartItemOption.count += request.count
         cartItemOptionRepository.save(cartItemOption)
     }
 
