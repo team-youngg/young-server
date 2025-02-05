@@ -2,7 +2,6 @@ package com.young.domain.order.service
 
 import com.young.domain.item.error.ItemError
 import com.young.domain.item.repository.ItemOptionRepository
-import com.young.domain.item.repository.ItemOptionValueRepository
 import com.young.domain.item.repository.ItemRepository
 import com.young.domain.order.domain.entity.Order
 import com.young.domain.order.domain.entity.OrderItem
@@ -10,11 +9,10 @@ import com.young.domain.order.domain.entity.OrderItemOption
 import com.young.domain.order.domain.enums.OrderStatus
 import com.young.domain.order.dto.request.OrderManyRequest
 import com.young.domain.order.dto.request.OrderRequest
+import com.young.domain.order.dto.response.OrderIdResponse
 import com.young.domain.order.repository.OrderItemOptionRepository
 import com.young.domain.order.repository.OrderItemRepository
 import com.young.domain.order.repository.OrderRepository
-import com.young.domain.payment.error.PaymentError
-import com.young.domain.payment.repository.PaymentRepository
 import com.young.domain.user.error.UserError
 import com.young.global.exception.CustomException
 import com.young.global.security.SecurityHolder
@@ -28,27 +26,23 @@ class OrderService (
     private val orderItemRepository: OrderItemRepository,
     private val securityHolder: SecurityHolder,
     private val itemRepository: ItemRepository,
-    private val paymentRepository: PaymentRepository,
     private val orderItemOptionRepository: OrderItemOptionRepository,
-    private val itemOptionValueRepository: ItemOptionValueRepository,
     private val itemOptionRepository: ItemOptionRepository,
 ) {
     @Transactional
-    fun order(requests: OrderManyRequest) {
+    fun order(requests: OrderManyRequest): OrderIdResponse {
         val user = securityHolder.user ?: throw CustomException(UserError.USER_NOT_FOUND)
-        val payment = paymentRepository.findByPaymentKey(requests.paymentKey)
-            ?: throw CustomException(PaymentError.PAYMENT_NOT_FOUND)
-        if (!payment.isPaid) throw CustomException(PaymentError.NOT_PAID)
         val order = Order(
             user = user,
-            status = OrderStatus.PAID,
-            payment = payment
+            status = OrderStatus.PENDING
         )
         orderRepository.save(order)
 
         for (request in requests.items) {
             orderProcess(request, order)
         }
+
+        return OrderIdResponse(order.id!!)
     }
 
     @Transactional
@@ -57,6 +51,11 @@ class OrderService (
             ?: throw CustomException(ItemError.OPTION_NOT_FOUND)
         val item = itemRepository.findByIdOrNull(itemOption.item.id)
             ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
+
+        if (itemOption.stock < request.count) {
+            throw CustomException(ItemError.NO_STOCK)
+        }
+
         val orderItem = OrderItem(
             item = item,
             order = order,
@@ -70,10 +69,5 @@ class OrderService (
             itemOption = itemOption
         )
         orderItemOptionRepository.save(orderItemOption)
-
-        // 재고 삭감
-        itemOption.stock -= request.count
-        itemOptionRepository.save(itemOption)
     }
-
 }
