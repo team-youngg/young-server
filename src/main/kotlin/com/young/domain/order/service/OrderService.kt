@@ -13,6 +13,7 @@ import com.young.domain.order.dto.request.OrderRequest
 import com.young.domain.order.repository.OrderItemOptionRepository
 import com.young.domain.order.repository.OrderItemRepository
 import com.young.domain.order.repository.OrderRepository
+import com.young.domain.payment.error.PaymentError
 import com.young.domain.payment.repository.PaymentRepository
 import com.young.domain.user.error.UserError
 import com.young.global.exception.CustomException
@@ -33,34 +34,25 @@ class OrderService (
     private val itemOptionRepository: ItemOptionRepository,
 ) {
     @Transactional
-    fun orderOne(request: OrderRequest) {
+    fun order(requests: OrderManyRequest) {
         val user = securityHolder.user ?: throw CustomException(UserError.USER_NOT_FOUND)
+        val payment = paymentRepository.findByPaymentKey(requests.paymentKey)
+            ?: throw CustomException(PaymentError.PAYMENT_NOT_FOUND)
+        if (!payment.isPaid) throw CustomException(PaymentError.NOT_PAID)
         val order = Order(
             user = user,
-            status = OrderStatus.ORDERED
+            status = OrderStatus.PAID,
+            payment = payment
         )
         orderRepository.save(order)
-        order(request, order)
-    }
 
-    @Transactional
-    fun orderFromCart(requests: OrderManyRequest) {
-        val user = securityHolder.user ?: throw CustomException(UserError.USER_NOT_FOUND)
-        val order = Order(
-            user = user,
-            status = OrderStatus.ORDERED
-        )
-        orderRepository.save(order)
-        for (item in requests.items) {
-            order(item, order)
+        for (request in requests.items) {
+            orderProcess(request, order)
         }
     }
 
     @Transactional
-    fun order(request: OrderRequest, order: Order) {
-        // TODO payment 만들기
-
-        // TODO 수량만큼 재고 삭감
+    fun orderProcess(request: OrderRequest, order: Order) {
         val itemOption = itemOptionRepository.findByIdOrNull(request.itemOptionId)
             ?: throw CustomException(ItemError.OPTION_NOT_FOUND)
         val item = itemRepository.findByIdOrNull(itemOption.item.id)
@@ -78,5 +70,10 @@ class OrderService (
             itemOption = itemOption
         )
         orderItemOptionRepository.save(orderItemOption)
+
+        // 재고 삭감
+        itemOption.stock -= request.count
+        itemOptionRepository.save(itemOption)
     }
+
 }

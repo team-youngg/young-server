@@ -22,5 +22,5 @@ class Order (
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "payment_id", nullable = false)
-    var payment: Payment? = null,
+    var payment: Payment,
 ) : BaseEntity()
