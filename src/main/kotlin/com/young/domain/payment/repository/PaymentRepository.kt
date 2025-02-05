@@ -4,4 +4,5 @@ import com.young.domain.payment.domain.entity.Payment
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface PaymentRepository : JpaRepository<Payment, Long> {
+    fun findByPaymentKey(paymentKey: String): Payment?
 }
