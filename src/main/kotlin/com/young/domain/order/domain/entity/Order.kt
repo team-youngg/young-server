@@ -5,12 +5,13 @@ import com.young.domain.payment.domain.entity.Payment
 import com.young.domain.user.domain.entity.User
 import com.young.global.common.BaseEntity
 import jakarta.persistence.*
+import java.util.UUID
 
 @Entity
 @Table(name = "orders")
 class Order (
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    @Id @GeneratedValue(strategy = GenerationType.UUID)
+    val id: UUID? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -18,7 +19,7 @@ class Order (
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    val status: OrderStatus,
+    var status: OrderStatus,
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "payment_id", nullable = false)
