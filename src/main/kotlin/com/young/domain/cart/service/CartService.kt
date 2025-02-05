@@ -5,6 +5,7 @@ import com.young.domain.cart.domain.entity.CartItemOption
 import com.young.domain.cart.dto.request.CreateCartRequest
 import com.young.domain.cart.dto.request.UpdateCartRequest
 import com.young.domain.cart.dto.response.CartItemResponse
+import com.young.domain.cart.dto.response.CartOptionCountResponse
 import com.young.domain.cart.error.CartError
 import com.young.domain.cart.repository.CartItemOptionRepository
 import com.young.domain.cart.repository.CartItemRepository
@@ -60,12 +61,14 @@ class CartService (
     }
 
     @Transactional
-    fun updateCartItemCount(request: UpdateCartRequest, cartItemIdOption: Long) {
-        val cartItemOption = cartItemOptionRepository.findByIdOrNull(cartItemIdOption)
+    fun updateCartItemCount(request: UpdateCartRequest, cartItemOptionId: Long): CartOptionCountResponse {
+        val cartItemOption = cartItemOptionRepository.findByIdOrNull(cartItemOptionId)
             ?: throw CustomException(ItemError.OPTION_NOT_FOUND)
 
         cartItemOption.count += request.count
         cartItemOptionRepository.save(cartItemOption)
+
+        return CartOptionCountResponse(cartItemOption.count)
     }
 
     @Transactional
