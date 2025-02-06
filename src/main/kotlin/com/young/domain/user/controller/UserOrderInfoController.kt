@@ -14,11 +14,11 @@ class UserOrderInfoController (
     private val userOrderInfoService: UserOrderInfoService
 ) {
     @Operation(summary = "주문 정보 조회", description = "주문 정보를 조회합니다.")
-    @GetMapping("/order-info")
+    @GetMapping
     fun getOrderInfo() = userOrderInfoService.getOrderInfo()
 
     @Operation(summary = "주문 정보 생성", description = "주문 정보를 생성합니다.")
-    @PostMapping("/order-info")
+    @PostMapping
     fun createOrderInfo(@RequestBody request: CreateOrderInfoRequest) = userOrderInfoService.createOrderInfo(request)
 
     @Operation(summary = "주문 정보 수정", description = "주문 정보를 수정합니다.")
@@ -27,6 +27,6 @@ class UserOrderInfoController (
     = userOrderInfoService.updateOrderInfo(request, infoId)
 
     @Operation(summary = "기본 배송지 수정", description = "기본 배송지를 수정합니다.")
-    @PatchMapping("/{infoId}")
+    @PatchMapping("default/{infoId}")
     fun updateOrderInfoDefault(@PathVariable infoId: Long) = userOrderInfoService.updateOrderInfoDefault(infoId)
 }
