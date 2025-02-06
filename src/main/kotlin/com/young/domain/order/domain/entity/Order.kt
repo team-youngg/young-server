@@ -3,7 +3,7 @@ package com.young.domain.order.domain.entity
 import com.young.domain.order.domain.enums.OrderStatus
 import com.young.domain.payment.domain.entity.Payment
 import com.young.domain.user.domain.entity.User
-import com.young.domain.user.domain.entity.UserOrderInfo
+import com.young.domain.info.domain.entity.UserOrderInfo
 import com.young.global.common.BaseEntity
 import jakarta.persistence.*
 import java.util.UUID

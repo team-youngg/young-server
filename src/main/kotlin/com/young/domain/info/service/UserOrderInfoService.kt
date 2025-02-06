@@ -1,11 +1,12 @@
-package com.young.domain.user.service
+package com.young.domain.info.service
 
-import com.young.domain.user.domain.entity.UserOrderInfo
-import com.young.domain.user.dto.request.CreateOrderInfoRequest
-import com.young.domain.user.dto.request.UpdateOrderInfoRequest
-import com.young.domain.user.dto.response.OrderInfoResponse
+import com.young.domain.info.domain.entity.UserOrderInfo
+import com.young.domain.info.dto.request.CreateOrderInfoRequest
+import com.young.domain.info.dto.request.UpdateOrderInfoRequest
+import com.young.domain.info.dto.response.OrderInfoResponse
+import com.young.domain.info.error.InfoError
 import com.young.domain.user.error.UserError
-import com.young.domain.user.repository.UserOrderInfoRepository
+import com.young.domain.info.repository.UserOrderInfoRepository
 import com.young.global.exception.CustomException
 import com.young.global.security.SecurityHolder
 import org.springframework.data.repository.findByIdOrNull
@@ -50,7 +51,7 @@ class UserOrderInfoService (
     @Transactional
     fun updateOrderInfo(request: UpdateOrderInfoRequest, infoId: Long) {
         val orderInfo = userOrderInfoRepository.findByIdOrNull(infoId)
-            ?: throw CustomException(UserError.INFO_NOT_FOUND)
+            ?: throw CustomException(InfoError.INFO_NOT_FOUND)
 
         orderInfo.title = request.title ?: orderInfo.title
         orderInfo.address = request.address ?: orderInfo.address
@@ -65,7 +66,7 @@ class UserOrderInfoService (
     fun updateOrderInfoDefault(infoId: Long) {
         val user = securityHolder.user ?: throw CustomException(UserError.USER_NOT_FOUND)
         val orderInfo = userOrderInfoRepository.findByIdOrNull(infoId)
-            ?: throw CustomException(UserError.INFO_NOT_FOUND)
+            ?: throw CustomException(InfoError.INFO_NOT_FOUND)
         val defaultInfo = userOrderInfoRepository.findByUserAndIsDefaultTrue(user)
 
         if (defaultInfo != null) {

@@ -1,5 +1,6 @@
-package com.young.domain.user.domain.entity
+package com.young.domain.info.domain.entity
 
+import com.young.domain.user.domain.entity.User
 import com.young.global.common.BaseEntity
 import jakarta.persistence.*
 

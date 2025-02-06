@@ -1,6 +1,6 @@
-package com.young.domain.user.dto.response
+package com.young.domain.info.dto.response
 
-import com.young.domain.user.domain.entity.UserOrderInfo
+import com.young.domain.info.domain.entity.UserOrderInfo
 
 data class OrderInfoResponse(
     val isDefault: Boolean,

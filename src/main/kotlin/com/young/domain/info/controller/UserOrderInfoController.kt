@@ -1,20 +1,20 @@
-package com.young.domain.user.controller
+package com.young.domain.info.controller
 
-import com.young.domain.user.dto.request.CreateOrderInfoRequest
-import com.young.domain.user.dto.request.UpdateOrderInfoRequest
-import com.young.domain.user.service.UserOrderInfoService
+import com.young.domain.info.dto.request.CreateOrderInfoRequest
+import com.young.domain.info.dto.request.UpdateOrderInfoRequest
+import com.young.domain.info.service.UserOrderInfoService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.web.bind.annotation.*
 
 @Tag(name = "주문 정보", description = "주문 정보 api")
 @RestController
-@RequestMapping("/users/order-info")
+@RequestMapping("/order-info")
 class UserOrderInfoController (
     private val userOrderInfoService: UserOrderInfoService
 ) {
-    @Operation(summary = "주문 정보 조회", description = "주문 정보를 조회합니다.")
-    @GetMapping
+    @Operation(summary = "주문 정보 조회", description = "내 주문 정보를 조회합니다.")
+    @GetMapping("my")
     fun getOrderInfo() = userOrderInfoService.getOrderInfo()
 
     @Operation(summary = "주문 정보 생성", description = "주문 정보를 생성합니다.")

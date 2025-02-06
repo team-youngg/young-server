@@ -1,5 +1,6 @@
 package com.young.domain.order.service
 
+import com.young.domain.info.error.InfoError
 import com.young.domain.item.error.ItemError
 import com.young.domain.item.repository.ItemOptionRepository
 import com.young.domain.item.repository.ItemRepository
@@ -18,7 +19,7 @@ import com.young.domain.order.repository.OrderItemOptionRepository
 import com.young.domain.order.repository.OrderItemRepository
 import com.young.domain.order.repository.OrderRepository
 import com.young.domain.user.error.UserError
-import com.young.domain.user.repository.UserOrderInfoRepository
+import com.young.domain.info.repository.UserOrderInfoRepository
 import com.young.global.exception.CustomException
 import com.young.global.security.SecurityHolder
 import org.springframework.data.domain.Pageable
@@ -41,9 +42,9 @@ class OrderService (
     fun order(requests: OrderManyRequest): OrderInfoResponse {
         val user = securityHolder.user ?: throw CustomException(UserError.USER_NOT_FOUND)
         val orderInfo = userOrderInfoRepository.findByIdOrNull(requests.orderInfoId)
-            ?: throw CustomException(UserError.INFO_NOT_FOUND)
+            ?: throw CustomException(InfoError.INFO_NOT_FOUND)
 
-        if (orderInfo.user.id != user.id) throw CustomException(UserError.INFO_NOT_MATCH)
+        if (orderInfo.user.id != user.id) throw CustomException(InfoError.INFO_NOT_MATCH)
 
         val order = Order(
             user = user,

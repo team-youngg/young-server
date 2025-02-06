@@ -1,4 +1,4 @@
-package com.young.domain.user.dto.request
+package com.young.domain.info.dto.request
 
 data class UpdateOrderInfoRequest(
     val title: String?,
