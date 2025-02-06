@@ -22,6 +22,6 @@ class WishController (
     fun updateWish(@RequestBody request: WishRequest) = wishService.updateWishItem(request)
 
     @Operation(summary = "찜 목록 조회", description = "내 찜 목록 조회하기")
-    @GetMapping
+    @GetMapping("/my")
     fun getWish() = wishService.getWishList()
 }

@@ -2,8 +2,11 @@ package com.young.domain.item.util
 
 import com.young.domain.item.domain.entity.Category
 import com.young.domain.item.domain.entity.Item
+import com.young.domain.item.dto.response.ItemResponse
 import com.young.domain.item.error.ItemError
 import com.young.domain.item.repository.*
+import com.young.domain.user.domain.entity.User
+import com.young.domain.wish.repository.WishRepository
 import com.young.global.exception.CustomException
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
@@ -14,7 +17,8 @@ class ItemUtil (
     private val itemCategoryRepository: ItemCategoryRepository,
     private val itemOptionRepository: ItemOptionRepository,
     private val itemOptionValueRepository: ItemOptionValueRepository,
-    private val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
+    private val wishRepository: WishRepository,
 ) {
     @Transactional
     fun getItemElements(item: Item) : ItemElements {
@@ -43,5 +47,20 @@ class ItemUtil (
         }
 
         return categories
+    }
+
+    @Transactional
+    fun toItemResponse(item: Item, user: User?): ItemResponse {
+        val isWish = user != null && wishRepository.findItemIdsByUser(user).contains(item.id)
+        val itemElements = getItemElements(item)
+
+        return ItemResponse.of(
+            item,
+            itemElements.images,
+            itemElements.options,
+            itemElements.optionValues,
+            itemElements.categories,
+            isWish
+        )
     }
 }
