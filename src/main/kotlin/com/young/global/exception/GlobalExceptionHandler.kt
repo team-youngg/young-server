@@ -9,7 +9,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
 @RestControllerAdvice
 class GlobalExceptionHandler {
     @ExceptionHandler(CustomException::class)
-    fun handleException(e: CustomException) = ErrorResponse.of(e)
+    fun handleException(e: CustomException): ResponseEntity<ErrorResponse> {
+        return ResponseEntity.status(e.error.status)
+            .body(ErrorResponse.of(e))
+    }
 
     @ExceptionHandler(Exception::class)
     fun handleGenericException(e: Exception): ResponseEntity<ErrorResponse> {
