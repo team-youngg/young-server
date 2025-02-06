@@ -36,7 +36,7 @@ class WishService (
     }
 
     @Transactional
-    fun getWishList() : List<ItemResponse> {
+    fun getWishList(): List<ItemResponse> {
         val user = securityHolder.user ?: throw CustomException(UserError.USER_NOT_FOUND)
         val wish = wishRepository.findByUser(user)
         val items = wish.map { it.item }
