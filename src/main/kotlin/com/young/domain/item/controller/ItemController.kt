@@ -1,5 +1,6 @@
 package com.young.domain.item.controller
 
+import com.young.domain.item.domain.entity.Item
 import com.young.domain.item.dto.request.CreateItemRequest
 import com.young.domain.item.dto.request.UpdateStockRequest
 import com.young.domain.item.service.ItemService
@@ -37,6 +38,11 @@ class ItemController (
     @PatchMapping("/{itemOptionId}")
     fun updateStock(@RequestBody request: UpdateStockRequest, @PathVariable itemOptionId: Long)
     = itemService.updateStock(request, itemOptionId)
+
+    @GetMapping("/category/{categoryId}")
+    fun getItems(@PathVariable categoryId: Long, @RequestParam pageable: Pageable): List<Item> {
+        return itemService.getItemsByCategory(categoryId, pageable)
+    }
 
     // TODO 아이템 수정 삭제, 아이템이미지 수정 삭제, 아이템 옵션 수정삭제
 }

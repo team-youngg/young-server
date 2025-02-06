@@ -156,7 +156,19 @@ class ItemService (
     }
 
     @Transactional
-    fun createCategory() {
-        // TODO 카테고리 생성(어드민일걸?)
+    fun getItemsByCategory(categoryId: Long, pageable: Pageable): List<Item> {
+        val categoryIds = getAllSubCategoryIds(categoryId)
+        val itemCategories = itemCategoryRepository.findByCategoryIdIn(categoryIds, pageable)
+        return itemCategories.map { it.item }.distinct()
+    }
+
+    private fun getAllSubCategoryIds(categoryId: Long): List<Long> {
+        val categoryIds = mutableListOf(categoryId)
+        val subCategories = categoryRepository.findByParentId(categoryId)
+
+        for (subCategory in subCategories) {
+            categoryIds.addAll(getAllSubCategoryIds(subCategory.id!!))
+        }
+        return categoryIds
     }
 }
