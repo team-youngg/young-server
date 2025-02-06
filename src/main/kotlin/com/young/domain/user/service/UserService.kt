@@ -1,5 +1,7 @@
 package com.young.domain.user.service
 
+import com.young.domain.user.domain.entity.UserOrderInfo
+import com.young.domain.user.dto.request.CreateOrderInfoRequest
 import com.young.domain.user.dto.response.OrderInfoResponse
 import com.young.domain.user.dto.response.UserResponse
 import com.young.domain.user.error.UserError
@@ -23,5 +25,21 @@ class UserService(
         val user = securityHolder.user ?: throw CustomException(UserError.USER_NOT_FOUND)
         val orderInfos = userOrderInfoRepository.findAllByUser(user)
         return orderInfos.map { OrderInfoResponse.of(it) }
+    }
+
+    fun createOrderInfo(request: CreateOrderInfoRequest) {
+        val user = securityHolder.user ?: throw CustomException(UserError.USER_NOT_FOUND)
+
+        val orderInfo = UserOrderInfo(
+            title = request.title,
+            address = request.address,
+            addressDetail = request.addressDetail,
+            postCode = request.postCode,
+            receiver = request.receiver,
+            tel = request.tel,
+            user = user,
+            isDefault = request.isDefault,
+        )
+        userOrderInfoRepository.save(orderInfo)
     }
 }
