@@ -11,10 +11,12 @@ import com.young.domain.order.dto.request.OrderManyRequest
 import com.young.domain.order.dto.request.OrderRequest
 import com.young.domain.order.dto.request.UpdateOrderOptionRequest
 import com.young.domain.order.dto.response.OrderIdResponse
+import com.young.domain.order.error.OrderError
 import com.young.domain.order.repository.OrderItemOptionRepository
 import com.young.domain.order.repository.OrderItemRepository
 import com.young.domain.order.repository.OrderRepository
 import com.young.domain.user.error.UserError
+import com.young.domain.user.repository.UserOrderInfoRepository
 import com.young.global.exception.CustomException
 import com.young.global.security.SecurityHolder
 import org.springframework.data.repository.findByIdOrNull
@@ -29,13 +31,20 @@ class OrderService (
     private val itemRepository: ItemRepository,
     private val orderItemOptionRepository: OrderItemOptionRepository,
     private val itemOptionRepository: ItemOptionRepository,
+    private val userOrderInfoRepository: UserOrderInfoRepository
 ) {
     @Transactional
     fun order(requests: OrderManyRequest): OrderIdResponse {
         val user = securityHolder.user ?: throw CustomException(UserError.USER_NOT_FOUND)
+        val orderInfo = userOrderInfoRepository.findByIdOrNull(requests.orderInfoId)
+            ?: throw CustomException(UserError.INFO_NOT_FOUND)
+
+        if (orderInfo.user.id == user.id) throw CustomException(UserError.INFO_NOT_FOUND)
+
         val order = Order(
             user = user,
-            status = OrderStatus.PENDING
+            status = OrderStatus.PENDING,
+            orderInfo = orderInfo
         )
         orderRepository.save(order)
 

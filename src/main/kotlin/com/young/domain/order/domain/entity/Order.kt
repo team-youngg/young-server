@@ -3,6 +3,7 @@ package com.young.domain.order.domain.entity
 import com.young.domain.order.domain.enums.OrderStatus
 import com.young.domain.payment.domain.entity.Payment
 import com.young.domain.user.domain.entity.User
+import com.young.domain.user.domain.entity.UserOrderInfo
 import com.young.global.common.BaseEntity
 import jakarta.persistence.*
 import java.util.UUID
@@ -16,6 +17,10 @@ class Order (
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     val user: User,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_info_id", nullable = false)
+    val orderInfo: UserOrderInfo,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
