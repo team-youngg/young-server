@@ -7,9 +7,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
-import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.multipart.MultipartFile
 
 @Tag(name = "상품", description = "상품 api")
 @RestController
@@ -20,10 +18,6 @@ class ItemController (
     @Operation(summary = "삼품 생성", description = "상품을 생성합니다.")
     @PostMapping
     fun createItem(@RequestBody request: CreateItemRequest) = itemService.createItem(request)
-
-    @Operation(summary = "이미지 업로드", description = "이미지를 업로드 합니다.")
-    @PostMapping("/images", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
-    fun uploadImage(@RequestPart image: MultipartFile) = itemService.uploadImage(image)
 
     @Operation(summary = "상품 상세 조회", description =  "상품을 상세 조회합니다.")
     @GetMapping("/{itemId}")

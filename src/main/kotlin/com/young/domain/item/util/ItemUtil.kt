@@ -3,10 +3,10 @@ package com.young.domain.item.util
 import com.young.domain.category.domain.entity.Category
 import com.young.domain.category.repository.CategoryRepository
 import com.young.domain.category.repository.ItemCategoryRepository
+import com.young.domain.image.repository.ItemImageRepository
 import com.young.domain.item.domain.entity.Item
 import com.young.domain.item.dto.response.ItemResponse
 import com.young.domain.item.error.ItemError
-import com.young.domain.item.repository.*
 import com.young.domain.option.repository.ItemOptionRepository
 import com.young.domain.option.repository.ItemOptionValueRepository
 import com.young.domain.user.domain.entity.User

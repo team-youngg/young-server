@@ -1,5 +1,6 @@
-package com.young.domain.item.domain.entity
+package com.young.domain.image.domain.entity
 
+import com.young.domain.item.domain.entity.Item
 import jakarta.persistence.*
 
 @Entity

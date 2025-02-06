@@ -3,10 +3,11 @@ package com.young.domain.item.service
 import com.young.domain.category.domain.entity.ItemCategory
 import com.young.domain.category.repository.CategoryRepository
 import com.young.domain.category.repository.ItemCategoryRepository
+import com.young.domain.image.domain.entity.ItemImage
+import com.young.domain.image.repository.ItemImageRepository
 import com.young.domain.item.domain.entity.*
 import com.young.domain.item.dto.request.CreateItemRequest
 import com.young.domain.item.dto.request.UpdateStockRequest
-import com.young.domain.item.dto.response.ImageResponse
 import com.young.domain.item.dto.response.ItemDetailResponse
 import com.young.domain.item.dto.response.ItemResponse
 import com.young.domain.item.dto.response.StockResponse
@@ -25,10 +26,6 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.multipart.MultipartFile
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder
-import java.io.File
-import java.util.*
 
 @Service
 class ItemService (
@@ -123,26 +120,6 @@ class ItemService (
         val items = itemRepository.findAllByOrderByCreatedAtDesc(pageable).toList()
 
         return items.map { itemUtil.toItemResponse(it, user) }
-    }
-
-    @Transactional
-    fun uploadImage(file: MultipartFile) : ImageResponse {
-        val filename = "${UUID.randomUUID()}-${file.originalFilename}"
-
-        val directory = File(uploadDir)
-        if (!directory.exists()) {
-            directory.mkdirs()
-        }
-
-        val targetFile = File(directory, filename)
-        file.transferTo(targetFile)
-
-        return ImageResponse(
-            ServletUriComponentsBuilder.fromCurrentContextPath()
-            .path("/uploads/")
-            .path(filename)
-            .toUriString()
-        )
     }
 
     @Transactional

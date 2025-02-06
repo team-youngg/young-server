@@ -1,4 +1,4 @@
-package com.young.domain.item.dto.response
+package com.young.domain.image.dto.response
 
 data class ImageResponse(
     val url: String,
