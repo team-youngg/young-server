@@ -40,9 +40,8 @@ class ItemController (
     = itemService.updateStock(request, itemOptionId)
 
     @GetMapping("/category/{categoryId}")
-    fun getItems(@PathVariable categoryId: Long, @RequestParam pageable: Pageable): List<Item> {
-        return itemService.getItemsByCategory(categoryId, pageable)
-    }
+    fun getItems(@PathVariable categoryId: Long, @PageableDefault pageable: Pageable)
+    = itemService.getItemsByCategory(categoryId, pageable)
 
     // TODO 아이템 수정 삭제, 아이템이미지 수정 삭제, 아이템 옵션 수정삭제
 }

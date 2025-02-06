@@ -120,18 +120,7 @@ class ItemService (
         }
         val items = itemRepository.findAllByOrderByCreatedAtDesc(pageable).toList()
 
-        return items.map { item ->
-            val itemElements = itemUtil.getItemElements(item)
-
-            ItemResponse.of(
-                item,
-                itemElements.images,
-                itemElements.options,
-                itemElements.optionValues,
-                itemElements.categories,
-                isWish = user != null && item.id in wishItemIds
-            )
-        }
+        return items.map { itemUtil.toItemResponse(it, user) }
     }
 
 
@@ -155,11 +144,17 @@ class ItemService (
         )
     }
 
+    // todo response 로 바꾸기
     @Transactional
-    fun getItemsByCategory(categoryId: Long, pageable: Pageable): List<Item> {
+    fun getItemsByCategory(categoryId: Long, pageable: Pageable): List<ItemResponse> {
+        val user = securityHolder.user
         val categoryIds = getAllSubCategoryIds(categoryId)
-        val itemCategories = itemCategoryRepository.findByCategoryIdIn(categoryIds, pageable)
-        return itemCategories.map { it.item }.distinct()
+        val itemCategories = itemCategoryRepository.findByCategoryIdIn(categoryIds).toList()
+        return itemCategories.map { it.item }
+            .distinct()
+            .drop(pageable.offset.toInt())
+            .take(pageable.pageSize)
+            .map { itemUtil.toItemResponse(it, user) }
     }
 
     private fun getAllSubCategoryIds(categoryId: Long): List<Long> {
