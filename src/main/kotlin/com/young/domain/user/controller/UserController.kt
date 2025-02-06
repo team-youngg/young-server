@@ -16,4 +16,8 @@ class UserController (
     @Operation(summary = "나 조회", description = "나 조회하기")
     @GetMapping("/me")
     fun getMe() = userService.getMe()
+
+    @Operation(summary = "주문 정보 조회", description = "주문 정보 조회하기")
+    @GetMapping("/order-info")
+    fun getOrderInfo() = userService.getOrderInfo()
 }
