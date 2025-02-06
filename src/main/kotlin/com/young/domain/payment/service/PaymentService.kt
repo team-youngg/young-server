@@ -96,16 +96,17 @@ class PaymentService (
         )
 
         paymentRepository.save(payment)
-        updateOrderStatus(request.orderId)
+        updateOrderStatus(request.orderId, payment)
 
         return paymentResponse
     }
 
     @Transactional
-    fun updateOrderStatus(orderId: UUID) {
+    fun updateOrderStatus(orderId: UUID, payment: Payment) {
         val order = orderRepository.findByIdOrNull(orderId)
 
         if (order != null) {
+            order.payment = payment
             order.status = OrderStatus.PAID
             orderRepository.save(order)
 
