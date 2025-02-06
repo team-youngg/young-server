@@ -1,6 +1,6 @@
-package com.young.domain.item.dto.response
+package com.young.domain.category.dto.response
 
-import com.young.domain.item.domain.entity.Category
+import com.young.domain.category.domain.entity.Category
 
 data class CategoryResponse(
     val name: String

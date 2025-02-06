@@ -1,9 +1,9 @@
 package com.young.domain.item.dto.response
 
-import com.young.domain.item.domain.entity.Category
+import com.young.domain.category.domain.entity.Category
 import com.young.domain.item.domain.entity.Item
-import com.young.domain.item.domain.entity.ItemOption
-import com.young.domain.item.domain.entity.ItemOptionValue
+import com.young.domain.option.domain.entity.ItemOption
+import com.young.domain.option.domain.entity.ItemOptionValue
 
 data class ItemDetailResponse(
     val id: Long,
@@ -11,7 +11,7 @@ data class ItemDetailResponse(
     val description: String,
     val detail: String,
     val price: Long,
-    val options: List<OptionStockResponse>,
+    val options: List<ItemOptionStockResponse>,
     val images: List<String>,
     val categories: List<String>,
     val isWish: Boolean,
@@ -27,7 +27,7 @@ data class ItemDetailResponse(
                 detail = item.detail,
                 price = item.price,
                 options = options.map { itemOption ->
-                    OptionStockResponse.of(optionValues
+                    ItemOptionStockResponse.of(optionValues
                         .filter { it.itemOption.id == itemOption.id })
                 },
                 images = images,

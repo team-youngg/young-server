@@ -1,6 +1,6 @@
-package com.young.domain.item.repository
+package com.young.domain.category.repository
 
-import com.young.domain.item.domain.entity.Category
+import com.young.domain.category.domain.entity.Category
 import org.springframework.data.repository.CrudRepository
 
 interface CategoryRepository : CrudRepository<Category, Long> {

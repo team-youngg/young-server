@@ -1,7 +1,7 @@
 package com.young.domain.payment.service
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.young.domain.item.repository.ItemOptionRepository
+import com.young.domain.option.repository.ItemOptionRepository
 import com.young.domain.order.domain.enums.OrderStatus
 import com.young.domain.order.error.OrderError
 import com.young.domain.order.repository.OrderItemOptionRepository

@@ -1,7 +1,7 @@
 package com.young.domain.order.dto.response
 
-import com.young.domain.item.domain.entity.ItemOptionValue
-import com.young.domain.item.dto.response.OptionResponse
+import com.young.domain.option.domain.entity.ItemOptionValue
+import com.young.domain.item.dto.response.ItemOptionResponse
 import com.young.domain.order.domain.entity.OrderItem
 import com.young.domain.order.domain.entity.OrderItemOption
 
@@ -10,7 +10,7 @@ data class OrderItemResponse(
     val name: String,
     val description: String,
     val price: Long,
-    val option: OptionResponse,
+    val option: ItemOptionResponse,
     val images: List<String>,
     val count: Long
 ) {
@@ -22,7 +22,7 @@ data class OrderItemResponse(
                 name = orderItem.item.name,
                 description = orderItem.item.description,
                 price = orderItem.price,
-                option = OptionResponse.of(optionValues),
+                option = ItemOptionResponse.of(optionValues),
                 images = images,
                 count = option.count,
             )

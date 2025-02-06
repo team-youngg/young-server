@@ -12,9 +12,8 @@ import com.young.domain.cart.repository.CartItemRepository
 import com.young.domain.cart.repository.CartRepository
 import com.young.domain.item.dto.response.ItemResponse
 import com.young.domain.item.error.ItemError
-import com.young.domain.item.repository.ItemOptionRepository
-import com.young.domain.item.repository.ItemOptionValueRepository
-import com.young.domain.item.repository.ItemRepository
+import com.young.domain.option.repository.ItemOptionRepository
+import com.young.domain.option.repository.ItemOptionValueRepository
 import com.young.domain.item.util.ItemUtil
 import com.young.domain.user.error.UserError
 import com.young.domain.wish.repository.WishRepository

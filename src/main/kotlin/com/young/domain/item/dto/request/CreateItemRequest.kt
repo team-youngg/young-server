@@ -1,5 +1,7 @@
 package com.young.domain.item.dto.request
 
+import com.young.domain.option.dto.request.CreateOptionRequest
+
 data class CreateItemRequest(
     val name: String,
     val description: String,

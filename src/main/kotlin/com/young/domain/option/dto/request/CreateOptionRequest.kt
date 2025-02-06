@@ -1,4 +1,4 @@
-package com.young.domain.item.dto.request
+package com.young.domain.option.dto.request
 
 data class CreateOptionRequest(
     val optionValues: Set<CreateOptionValueRequest>

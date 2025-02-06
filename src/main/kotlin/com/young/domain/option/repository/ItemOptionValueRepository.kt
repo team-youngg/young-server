@@ -1,8 +1,8 @@
-package com.young.domain.item.repository
+package com.young.domain.option.repository
 
-import com.young.domain.item.domain.entity.ItemOption
-import com.young.domain.item.domain.entity.ItemOptionValue
-import com.young.domain.item.domain.enums.ItemOptionType
+import com.young.domain.option.domain.entity.ItemOption
+import com.young.domain.option.domain.entity.ItemOptionValue
+import com.young.domain.option.domain.enums.ItemOptionType
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface ItemOptionValueRepository : JpaRepository<ItemOptionValue, Long> {

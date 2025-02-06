@@ -1,4 +1,4 @@
-package com.young.domain.item.domain.entity
+package com.young.domain.category.domain.entity
 
 import jakarta.persistence.*
 

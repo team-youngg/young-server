@@ -1,6 +1,6 @@
-package com.young.domain.item.dto.request
+package com.young.domain.option.dto.request
 
-import com.young.domain.item.domain.enums.ItemOptionType
+import com.young.domain.option.domain.enums.ItemOptionType
 
 data class CreateOptionValueRequest(
     val type: ItemOptionType,

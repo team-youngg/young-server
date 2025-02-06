@@ -1,6 +1,5 @@
 package com.young.domain.item.controller
 
-import com.young.domain.item.domain.entity.Item
 import com.young.domain.item.dto.request.CreateItemRequest
 import com.young.domain.item.dto.request.UpdateStockRequest
 import com.young.domain.item.service.ItemService
@@ -39,6 +38,7 @@ class ItemController (
     fun updateStock(@RequestBody request: UpdateStockRequest, @PathVariable itemOptionId: Long)
     = itemService.updateStock(request, itemOptionId)
 
+    @Operation(summary = "상품 카테고리별 조회", description = "상품을 카테고리별로 조회합니다.")
     @GetMapping("/category/{categoryId}")
     fun getItems(@PathVariable categoryId: Long, @PageableDefault pageable: Pageable)
     = itemService.getItemsByCategory(categoryId, pageable)

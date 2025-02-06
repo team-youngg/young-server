@@ -1,7 +1,7 @@
 package com.young.domain.cart.dto.response
 
 import com.young.domain.cart.domain.entity.CartItemOption
-import com.young.domain.item.domain.entity.ItemOptionValue
+import com.young.domain.option.domain.entity.ItemOptionValue
 
 data class CartItemOptionResponse(
     val itemOptionId: Long,

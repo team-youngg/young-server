@@ -1,9 +1,7 @@
-package com.young.domain.item.repository
+package com.young.domain.category.repository
 
 import com.young.domain.item.domain.entity.Item
-import com.young.domain.item.domain.entity.ItemCategory
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
+import com.young.domain.category.domain.entity.ItemCategory
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface ItemCategoryRepository : JpaRepository<ItemCategory, Long> {

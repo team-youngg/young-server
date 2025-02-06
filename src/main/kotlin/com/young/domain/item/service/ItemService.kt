@@ -1,5 +1,8 @@
 package com.young.domain.item.service
 
+import com.young.domain.category.domain.entity.ItemCategory
+import com.young.domain.category.repository.CategoryRepository
+import com.young.domain.category.repository.ItemCategoryRepository
 import com.young.domain.item.domain.entity.*
 import com.young.domain.item.dto.request.CreateItemRequest
 import com.young.domain.item.dto.request.UpdateStockRequest
@@ -10,6 +13,10 @@ import com.young.domain.item.dto.response.StockResponse
 import com.young.domain.item.error.ItemError
 import com.young.domain.item.repository.*
 import com.young.domain.item.util.ItemUtil
+import com.young.domain.option.domain.entity.ItemOption
+import com.young.domain.option.domain.entity.ItemOptionValue
+import com.young.domain.option.repository.ItemOptionRepository
+import com.young.domain.option.repository.ItemOptionValueRepository
 import com.young.domain.wish.repository.WishRepository
 import com.young.global.exception.CustomException
 import com.young.global.security.SecurityHolder
@@ -113,16 +120,10 @@ class ItemService (
     @Transactional
     fun getItems(pageable: Pageable): List<ItemResponse> {
         val user = securityHolder.user
-        val wishItemIds: Set<Long> = if (user != null) {
-            wishRepository.findItemIdsByUser(user).toSet()
-        } else {
-            emptySet()
-        }
         val items = itemRepository.findAllByOrderByCreatedAtDesc(pageable).toList()
 
         return items.map { itemUtil.toItemResponse(it, user) }
     }
-
 
     @Transactional
     fun uploadImage(file: MultipartFile) : ImageResponse {
@@ -144,7 +145,6 @@ class ItemService (
         )
     }
 
-    // todo response 로 바꾸기
     @Transactional
     fun getItemsByCategory(categoryId: Long, pageable: Pageable): List<ItemResponse> {
         val user = securityHolder.user

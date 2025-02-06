@@ -1,6 +1,6 @@
-package com.young.domain.item.service
+package com.young.domain.category.service
 
-import com.young.domain.item.repository.ItemCategoryRepository
+import com.young.domain.category.repository.ItemCategoryRepository
 import com.young.domain.item.repository.ItemRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -11,7 +11,6 @@ class ItemCategoryService (
     private val itemRepository: ItemRepository,
     private val categoryRepository: ItemCategoryRepository
 ) {
-
     @Transactional
     fun createCategory() {
         // TODO 카테고리 생성(어드민일걸?)

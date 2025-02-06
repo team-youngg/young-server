@@ -2,7 +2,7 @@ package com.young.domain.order.service
 
 import com.young.domain.info.error.InfoError
 import com.young.domain.item.error.ItemError
-import com.young.domain.item.repository.ItemOptionRepository
+import com.young.domain.option.repository.ItemOptionRepository
 import com.young.domain.item.repository.ItemRepository
 import com.young.domain.item.util.ItemUtil
 import com.young.domain.order.domain.entity.Order
