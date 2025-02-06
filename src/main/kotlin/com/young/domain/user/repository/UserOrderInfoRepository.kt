@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface UserOrderInfoRepository : JpaRepository<UserOrderInfo, Long> {
     fun findAllByUser(user: User): List<UserOrderInfo>
+    fun findByUserAndIsDefaultTrue(user: User): UserOrderInfo?
 }
