@@ -6,6 +6,7 @@ import com.young.domain.item.repository.ItemRepository
 import com.young.domain.item.util.ItemUtil
 import com.young.domain.user.error.UserError
 import com.young.domain.wish.domain.entity.Wish
+import com.young.domain.wish.dto.request.WishRequest
 import com.young.domain.wish.repository.WishRepository
 import com.young.global.exception.CustomException
 import com.young.global.security.SecurityHolder
@@ -21,8 +22,8 @@ class WishService (
     private val itemUtil: ItemUtil
 ) {
     @Transactional
-    fun updateWishItem(itemId: Long) {
-        val item = itemRepository.findByIdOrNull(itemId) ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
+    fun updateWishItem(request: WishRequest) {
+        val item = itemRepository.findByIdOrNull(request.itemId) ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
         val user = securityHolder.user ?: throw CustomException(UserError.USER_NOT_FOUND)
         val wish = wishRepository.findByUserAndItem(user, item)
 
