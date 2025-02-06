@@ -4,5 +4,5 @@ import java.util.UUID
 
 data class OrderInfoResponse(
     val id: UUID,
-//    val amount: Long,
+    val amount: Long,
 )

@@ -52,15 +52,15 @@ class OrderService (
         )
         orderRepository.save(order)
 
-        for (request in requests.items) {
-            orderProcess(request, order)
-        }
+        val amount = requests.items.sumOf { orderProcess(it, order) }
+        order.amount = amount
+        orderRepository.save(order)
 
-        return OrderInfoResponse(order.id!!)
+        return OrderInfoResponse(order.id!!, amount)
     }
 
     @Transactional
-    fun orderProcess(request: OrderRequest, order: Order) {
+    fun orderProcess(request: OrderRequest, order: Order): Long {
         val itemOption = itemOptionRepository.findByIdOrNull(request.itemOptionId)
             ?: throw CustomException(ItemError.OPTION_NOT_FOUND)
         val item = itemRepository.findByIdOrNull(itemOption.item.id)
@@ -83,6 +83,8 @@ class OrderService (
             itemOption = itemOption
         )
         orderItemOptionRepository.save(orderItemOption)
+
+        return item.price * request.count
     }
 
     @Transactional
@@ -92,7 +94,8 @@ class OrderService (
         val newItemOption = itemOptionRepository.findByIdOrNull(request.newItemOptionId)
             ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
 
-        if (newItemOption.item.id != orderItemOption.orderItem.item.id) throw CustomException(ItemError.ITEM_OPTION_NOT_MATCH)
+        if (newItemOption.item.id != orderItemOption.orderItem.item.id)
+            throw CustomException(ItemError.ITEM_OPTION_NOT_MATCH)
 
         orderItemOption.itemOption = newItemOption
         orderItemOptionRepository.save(orderItemOption)
@@ -119,7 +122,7 @@ class OrderService (
                     )
                 }
             }
-            OrderResponse.of(order, orderItemResponses)
+            OrderResponse.of(order, orderItemResponses, order.amount!!)
         }
     }
 }

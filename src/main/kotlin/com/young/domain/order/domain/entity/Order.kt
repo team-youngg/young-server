@@ -22,6 +22,9 @@ class Order (
     @JoinColumn(name = "order_info_id", nullable = false)
     val orderInfo: UserOrderInfo,
 
+    @Column(nullable = true)
+    var amount: Long? = null,
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     var status: OrderStatus,
