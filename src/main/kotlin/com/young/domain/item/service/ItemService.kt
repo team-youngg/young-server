@@ -7,6 +7,7 @@ import com.young.domain.image.domain.entity.ItemImage
 import com.young.domain.image.repository.ItemImageRepository
 import com.young.domain.item.domain.entity.*
 import com.young.domain.item.dto.request.CreateItemRequest
+import com.young.domain.item.dto.request.UpdateItemRequest
 import com.young.domain.item.dto.request.UpdateStockRequest
 import com.young.domain.item.dto.response.ItemDetailResponse
 import com.young.domain.item.dto.response.ItemResponse
@@ -142,5 +143,25 @@ class ItemService (
             categoryIds.addAll(getAllSubCategoryIds(subCategory.id!!))
         }
         return categoryIds
+    }
+
+    @Transactional
+    fun updateItem(request: UpdateItemRequest, itemId: Long) {
+        val item = itemRepository.findByIdOrNull(itemId) ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
+
+        item.name = request.name ?: item.name
+        item.description = request.description ?: item.description
+        item.price = request.price ?: item.price
+        item.detail = request.detail ?: item.detail
+
+        // TODO category 랑 이미지 수정도 만들기
+
+        itemRepository.save(item)
+    }
+
+    @Transactional
+    fun deleteItem(itemId: Long) {
+        val item = itemRepository.findByIdOrNull(itemId) ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
+        itemRepository.delete(item)
     }
 }

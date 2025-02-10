@@ -1,6 +1,7 @@
 package com.young.domain.item.controller
 
 import com.young.domain.item.dto.request.CreateItemRequest
+import com.young.domain.item.dto.request.UpdateItemRequest
 import com.young.domain.item.dto.request.UpdateStockRequest
 import com.young.domain.item.service.ItemService
 import io.swagger.v3.oas.annotations.Operation
@@ -27,8 +28,9 @@ class ItemController (
     @GetMapping
     fun getItems(@PageableDefault pageable: Pageable) = itemService.getItems(pageable)
 
+    // TODO option controller 로 이동
     @Operation(summary = "재고 수정", description = "상품 옵션 아이디로 재고를 수정합니다.")
-    @PatchMapping("/{itemOptionId}")
+    @PatchMapping("/stock/{itemOptionId}")
     fun updateStock(@RequestBody request: UpdateStockRequest, @PathVariable itemOptionId: Long)
     = itemService.updateStock(request, itemOptionId)
 
@@ -37,5 +39,13 @@ class ItemController (
     fun getItems(@PathVariable categoryId: Long, @PageableDefault pageable: Pageable)
     = itemService.getItemsByCategory(categoryId, pageable)
 
-    // TODO 아이템 수정 삭제, 아이템이미지 수정 삭제, 아이템 옵션 수정삭제
+    @Operation(summary = "상품 수정", description = "상품 정보를 수정합니다.")
+    @PatchMapping("/{itemId}")
+    fun updateItem(@RequestBody request: UpdateItemRequest, @PathVariable itemId: Long)
+    = itemService.updateItem(request, itemId)
+
+    @Operation(summary = "상품 삭제", description = "상품을 삭제합니다.")
+    @DeleteMapping("/{itemId}")
+    fun deleteItem(@PathVariable itemId: Long)
+    = itemService.deleteItem(itemId)
 }
