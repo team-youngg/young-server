@@ -11,7 +11,6 @@ import com.young.domain.order.domain.entity.OrderItemOption
 import com.young.domain.order.domain.enums.OrderStatus
 import com.young.domain.order.dto.request.OrderManyRequest
 import com.young.domain.order.dto.request.OrderRequest
-import com.young.domain.order.dto.request.UpdateOrderOptionRequest
 import com.young.domain.order.dto.response.OrderInfoResponse
 import com.young.domain.order.dto.response.OrderItemResponse
 import com.young.domain.order.dto.response.OrderResponse
@@ -86,20 +85,6 @@ class OrderService (
         orderItemOptionRepository.save(orderItemOption)
 
         return item.price * request.count
-    }
-
-    @Transactional
-    fun updateOrderOption(request: UpdateOrderOptionRequest) {
-        val orderItemOption = orderItemOptionRepository.findByIdOrNull(request.orderItemOptionId)
-            ?: throw CustomException(ItemError.OPTION_NOT_FOUND)
-        val newItemOption = itemOptionRepository.findByIdOrNull(request.newItemOptionId)
-            ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
-
-        if (newItemOption.item.id != orderItemOption.orderItem.item.id)
-            throw CustomException(ItemError.ITEM_OPTION_NOT_MATCH)
-
-        orderItemOption.itemOption = newItemOption
-        orderItemOptionRepository.save(orderItemOption)
     }
 
     @Transactional
