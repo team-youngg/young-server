@@ -3,6 +3,7 @@ package com.young.domain.cart.service
 import com.young.domain.cart.domain.entity.CartItem
 import com.young.domain.cart.domain.entity.CartItemOption
 import com.young.domain.cart.dto.request.CreateCartRequest
+import com.young.domain.cart.dto.request.UpdateCartOptionRequest
 import com.young.domain.cart.dto.request.UpdateCartRequest
 import com.young.domain.cart.dto.response.CartItemResponse
 import com.young.domain.cart.dto.response.CartOptionCountResponse
@@ -101,5 +102,19 @@ class CartService (
             }
             itemOptionValues
         }.flatten()
+    }
+
+    @Transactional
+    fun updateCartOption(request: UpdateCartOptionRequest) {
+        val cartItemOption = cartItemOptionRepository.findByIdOrNull(request.cartItemOptionId)
+            ?: throw CustomException(ItemError.OPTION_NOT_FOUND)
+        val newItemOption = itemOptionRepository.findByIdOrNull(request.newItemOptionId)
+            ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
+
+        if (newItemOption.item.id != cartItemOption.cartItem.item.id)
+            throw CustomException(ItemError.ITEM_OPTION_NOT_MATCH)
+
+        cartItemOption.itemOption = newItemOption
+        cartItemOptionRepository.save(cartItemOption)
     }
 }
