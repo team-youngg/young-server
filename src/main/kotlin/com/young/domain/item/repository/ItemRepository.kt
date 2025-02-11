@@ -7,4 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface ItemRepository : JpaRepository<Item, Long> {
     fun findAllByOrderByCreatedAtDesc(pageable: Pageable): Page<Item>
+    fun findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+        name: String, description: String, pageable: Pageable
+    ): List<Item>
 }
