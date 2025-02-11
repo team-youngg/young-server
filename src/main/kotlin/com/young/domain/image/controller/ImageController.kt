@@ -12,11 +12,11 @@ import org.springframework.web.multipart.MultipartFile
 
 @Tag(name = "이미지", description = "이미지 api")
 @RestController
-@RequestMapping("/image")
+@RequestMapping("/images")
 class ImageController (
     private val imageService: ImageService
 ) {
     @Operation(summary = "이미지 업로드", description = "이미지를 업로드 합니다.")
-    @PostMapping("/images", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @PostMapping(consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun uploadImage(@RequestPart image: MultipartFile) = imageService.uploadImage(image)
 }
