@@ -117,4 +117,12 @@ class CartService (
         cartItemOption.itemOption = newItemOption
         cartItemOptionRepository.save(cartItemOption)
     }
+
+    @Transactional
+    fun deleteCartOption(cartItemOptionId: Long) {
+        val cartItemOption = cartItemOptionRepository.findByIdOrNull(cartItemOptionId)
+            ?: throw CustomException(ItemError.OPTION_NOT_FOUND)
+
+        cartItemOptionRepository.delete(cartItemOption)
+    }
 }

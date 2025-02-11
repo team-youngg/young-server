@@ -33,5 +33,7 @@ class CartController (
     @PatchMapping
     fun updateOption(@RequestBody request: UpdateCartOptionRequest) = cartService.updateCartOption(request)
 
-    // TODO 삭제
+    @Operation(summary = "옵션 삭제", description = "카트 상품 옵션을 삭제합니다.")
+    @DeleteMapping("/{cartItemOptionId}")
+    fun deleteCartItem(@PathVariable cartItemOptionId: Long) = cartService.deleteCartOption(cartItemOptionId)
 }
