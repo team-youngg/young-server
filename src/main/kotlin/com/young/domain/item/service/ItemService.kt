@@ -164,11 +164,4 @@ class ItemService (
         val item = itemRepository.findByIdOrNull(itemId) ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
         itemRepository.delete(item)
     }
-
-    @Transactional(readOnly = true)
-    fun searchItems(query: String, pageable: Pageable): List<ItemResponse> {
-        val user = securityHolder.user
-        val items = itemRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(query, query, pageable)
-        return items.map { itemUtil.toItemResponse(it, user) }
-    }
 }

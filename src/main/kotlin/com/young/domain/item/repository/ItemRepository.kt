@@ -10,4 +10,7 @@ interface ItemRepository : JpaRepository<Item, Long> {
     fun findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
         name: String, description: String, pageable: Pageable
     ): List<Item>
+    fun findByPriceBetween(minPrice: Long, maxPrice: Long, pageable: Pageable): List<Item>
+    fun findByPriceGreaterThanEqual(minPrice: Long, pageable: Pageable): List<Item>
+    fun findByPriceLessThanEqual(maxPrice: Long, pageable: Pageable): List<Item>
 }
