@@ -55,7 +55,7 @@ class OAuthService (
     @Transactional
     fun getGoogleAccessToken(request: GoogleLoginRequest): String {
         val requestUrl = "https://oauth2.googleapis.com/token"
-        val redirectUri = "http://localhost:3000/auth/google/callback"
+        val redirectUri = "http://localhost:3000/oauth"
 
         val formData: MultiValueMap<String, String> = LinkedMultiValueMap()
         formData.add("code", request.code)
