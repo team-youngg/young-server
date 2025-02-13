@@ -27,30 +27,6 @@ class ItemSearchService (
         return items.map { itemUtil.toItemResponse(it, user) }
     }
 
-    @Transactional(readOnly = true)
-    fun searchItemsByPrice(minPrice: Long?, maxPrice: Long?, pageable: Pageable): List<ItemResponse> {
-        val user = securityHolder.user
-        val items = when {
-            minPrice != null && maxPrice != null -> itemRepository.findByPriceBetween(minPrice, maxPrice, pageable)
-            minPrice != null -> itemRepository.findByPriceGreaterThanEqual(minPrice, pageable)
-            maxPrice != null -> itemRepository.findByPriceLessThanEqual(maxPrice, pageable)
-            else -> itemRepository.findAll()
-        }
-        return items.map { itemUtil.toItemResponse(it, user) }
-    }
-
-    @Transactional
-    fun getItemsByCategory(categoryId: Long, pageable: Pageable): List<ItemResponse> {
-        val user = securityHolder.user
-        val categoryIds = getAllSubCategoryIds(categoryId)
-        val itemCategories = itemCategoryRepository.findByCategoryIdIn(categoryIds).toList()
-        return itemCategories.map { it.item }
-            .distinct()
-            .drop(pageable.offset.toInt())
-            .take(pageable.pageSize)
-            .map { itemUtil.toItemResponse(it, user) }
-    }
-
     private fun getAllSubCategoryIds(categoryId: Long): List<Long> {
         val categoryIds = mutableSetOf(categoryId)
         val category = categoryRepository.findById(categoryId).orElse(null) ?: return categoryIds.toList()
@@ -83,5 +59,30 @@ class ItemSearchService (
         }
 
         return categoryIds.toList()
+    }
+
+    @Transactional(readOnly = true)
+    fun getItemsByCategoryAndPrice(
+        categoryId: Long,
+        minPrice: Long?,
+        maxPrice: Long?,
+        pageable: Pageable
+    ): List<ItemResponse> {
+        val user = securityHolder.user
+        val categoryIds = getAllSubCategoryIds(categoryId)
+
+        val itemCategories = when {
+            minPrice != null && maxPrice != null ->
+                itemCategoryRepository.findByCategoryIdInAndItemPriceBetween(categoryIds, minPrice, maxPrice, pageable)
+            minPrice != null ->
+                itemCategoryRepository.findByCategoryIdInAndItemPriceGreaterThanEqual(categoryIds, minPrice, pageable)
+            maxPrice != null ->
+                itemCategoryRepository.findByCategoryIdInAndItemPriceLessThanEqual(categoryIds, maxPrice, pageable)
+            else -> itemCategoryRepository.findByCategoryIdIn(categoryIds, pageable)
+        }
+
+        val items = itemCategories.map { it.item }.distinct()
+
+        return items.map { itemUtil.toItemResponse(it, user) }
     }
 }
