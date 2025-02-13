@@ -42,7 +42,7 @@ class ReviewService (
         reviewRepository.save(review)
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     fun getReviews(itemId: Long): List<ReviewResponse> {
         val item = itemRepository.findByIdOrNull(itemId) ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
         val itemOptions = itemOptionRepository.findAllByItem(item)
@@ -51,7 +51,7 @@ class ReviewService (
         return reviews.map { ReviewResponse.of(it) }
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     fun getMyReviews(): List<ReviewResponse> {
         val user = securityHolder.user ?: throw CustomException(UserError.USER_NOT_FOUND)
         val reviews = reviewRepository.findAllByAuthor(user)
