@@ -1,5 +1,6 @@
 package com.young.domain.item.service
 
+import com.young.domain.category.domain.entity.Category
 import com.young.domain.category.domain.entity.ItemCategory
 import com.young.domain.category.repository.CategoryRepository
 import com.young.domain.category.repository.ItemCategoryRepository
@@ -27,6 +28,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.*
 
 @Service
 class ItemService (
@@ -136,13 +138,37 @@ class ItemService (
     }
 
     private fun getAllSubCategoryIds(categoryId: Long): List<Long> {
-        val categoryIds = mutableListOf(categoryId)
-        val subCategories = categoryRepository.findByParentId(categoryId)
+        val categoryIds = mutableSetOf(categoryId)
+        val category = categoryRepository.findById(categoryId).orElse(null) ?: return categoryIds.toList()
+        var currentCategory: Category? = category
+        var isFromTotal = false
 
-        for (subCategory in subCategories) {
-            categoryIds.addAll(getAllSubCategoryIds(subCategory.id!!))
+        while (currentCategory?.parentId != null) {
+            if (currentCategory.parentId == 3L) {
+                isFromTotal = true
+                break
+            }
+            currentCategory = categoryRepository.findById(currentCategory.parentId!!).orElse(null)
         }
-        return categoryIds
+
+        if (isFromTotal) {
+            listOf(1L, 2L, 3L).forEach { genderCategoryId ->
+                categoryRepository.findByParentId(genderCategoryId)
+                    .firstOrNull { it.name == category.name }
+                    ?.let { categoryIds.add(it.id!!) }
+            }
+        }
+
+        val queue: Queue<Long> = LinkedList(categoryIds)
+        while (queue.isNotEmpty()) {
+            val currentId = queue.poll()
+            val subCategories = categoryRepository.findByParentId(currentId)
+            subCategories.forEach {
+                if (categoryIds.add(it.id!!)) queue.add(it.id)
+            }
+        }
+
+        return categoryIds.toList()
     }
 
     @Transactional
