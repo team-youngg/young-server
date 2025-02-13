@@ -63,6 +63,7 @@ class UserOrderInfoService (
         userOrderInfoRepository.save(orderInfo)
     }
 
+    @Transactional
     fun updateOrderInfoDefault(infoId: Long) {
         val user = securityHolder.user ?: throw CustomException(UserError.USER_NOT_FOUND)
         val orderInfo = userOrderInfoRepository.findByIdOrNull(infoId)
@@ -76,5 +77,13 @@ class UserOrderInfoService (
 
         orderInfo.isDefault = true
         userOrderInfoRepository.save(orderInfo)
+    }
+
+    @Transactional
+    fun deleteOrderInfo(infoId: Long) {
+        val orderInfo = userOrderInfoRepository.findByIdOrNull(infoId)
+            ?: throw CustomException(InfoError.INFO_NOT_FOUND)
+
+        userOrderInfoRepository.delete(orderInfo)
     }
 }

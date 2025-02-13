@@ -14,7 +14,7 @@ class UserOrderInfoController (
     private val userOrderInfoService: UserOrderInfoService
 ) {
     @Operation(summary = "주문 정보 조회", description = "내 주문 정보를 조회합니다.")
-    @GetMapping("my")
+    @GetMapping("/my")
     fun getOrderInfo() = userOrderInfoService.getOrderInfo()
 
     @Operation(summary = "주문 정보 생성", description = "주문 정보를 생성합니다.")
@@ -26,7 +26,11 @@ class UserOrderInfoController (
     fun updateOrderInfo(@RequestBody request: UpdateOrderInfoRequest, @PathVariable infoId: Long)
     = userOrderInfoService.updateOrderInfo(request, infoId)
 
-    @Operation(summary = "기본 배송지 수정", description = "기본 배송지를 수정합니다.")
-    @PatchMapping("default/{infoId}")
+    @Operation(summary = "기본 주문 정보 변경", description = "기본 주문 정보로 변경합니다.")
+    @PatchMapping("/default/{infoId}")
     fun updateOrderInfoDefault(@PathVariable infoId: Long) = userOrderInfoService.updateOrderInfoDefault(infoId)
+
+    @Operation(summary = "주문 정보 삭제", description = "주문 정보를 삭제합니다.")
+    @DeleteMapping("/{infoId}")
+    fun deleteOrderInfo(@PathVariable infoId: Long) = userOrderInfoService.deleteOrderInfo(infoId)
 }
