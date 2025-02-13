@@ -11,7 +11,7 @@ class Review (
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
-    val star: Float,
+    var star: Float,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -21,7 +21,7 @@ class Review (
     @JoinColumn(name = "option_id", nullable = false)
     val itemOption: ItemOption,
 
-    val comment: String,
+    var comment: String,
 
     @OneToMany(mappedBy = "review", cascade = [CascadeType.ALL], orphanRemoval = true)
     val images: MutableList<ReviewImage> = mutableListOf(),
