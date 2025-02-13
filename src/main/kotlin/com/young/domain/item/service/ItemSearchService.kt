@@ -84,20 +84,4 @@ class ItemSearchService (
 
         return categoryIds.toList()
     }
-
-    @Transactional(readOnly = true)
-    fun getItemsByCategoryAndPrice(categoryId: Long, minPrice: Long?, maxPrice: Long?, pageable: Pageable): List<ItemResponse> {
-        val user = securityHolder.user
-        val categoryIds = getAllSubCategoryIds(categoryId)
-
-        val items = when {
-            minPrice != null && maxPrice != null -> itemRepository.findByCategoryIdInAndPriceBetween(categoryIds, minPrice, maxPrice, pageable)
-            minPrice != null -> itemRepository.findByCategoryIdInAndPriceGreaterThanEqual(categoryIds, minPrice, pageable)
-            maxPrice != null -> itemRepository.findByCategoryIdInAndPriceLessThanEqual(categoryIds, maxPrice, pageable)
-            else -> itemRepository.findByCategoryIdIn(categoryIds, pageable)
-        }
-
-        return items.map { itemUtil.toItemResponse(it, user) }
-    }
-
 }
