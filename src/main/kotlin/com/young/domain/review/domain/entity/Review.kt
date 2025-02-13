@@ -22,4 +22,13 @@ class Review (
     val itemOption: ItemOption,
 
     val comment: String,
-) : BaseEntity()
+
+    @OneToMany(mappedBy = "review", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val images: MutableList<ReviewImage> = mutableListOf(),
+) : BaseEntity() {
+    fun addImages(reviewImages: List<ReviewImage>) {
+        reviewImages.forEach { image ->
+            images.add(image)
+        }
+    }
+}
