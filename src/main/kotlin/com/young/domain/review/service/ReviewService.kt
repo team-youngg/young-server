@@ -3,6 +3,7 @@ package com.young.domain.review.service
 import com.young.domain.item.error.ItemError
 import com.young.domain.item.repository.ItemRepository
 import com.young.domain.option.repository.ItemOptionRepository
+import com.young.domain.option.repository.ItemOptionValueRepository
 import com.young.domain.review.domain.entity.Review
 import com.young.domain.review.domain.entity.ReviewImage
 import com.young.domain.review.dto.request.CreateReviewRequest
@@ -22,7 +23,8 @@ class ReviewService (
     private val reviewRepository: ReviewRepository,
     private val securityHolder: SecurityHolder,
     private val itemOptionRepository: ItemOptionRepository,
-    private val itemRepository: ItemRepository
+    private val itemRepository: ItemRepository,
+    private val itemOptionValueRepository: ItemOptionValueRepository
 ) {
     @Transactional
     fun createReview(request: CreateReviewRequest) {
@@ -48,7 +50,10 @@ class ReviewService (
         val itemOptions = itemOptionRepository.findAllByItem(item)
         val reviews = itemOptions.flatMap { reviewRepository.findAllByItemOption(it) }
 
-        return reviews.map { ReviewResponse.of(it) }
+        return reviews.map {
+            val itemOptionValues = itemOptionValueRepository.findAllByItemOption(it.itemOption)
+            ReviewResponse.of(it, itemOptionValues)
+        }
     }
 
     @Transactional(readOnly = true)
@@ -56,7 +61,10 @@ class ReviewService (
         val user = securityHolder.user ?: throw CustomException(UserError.USER_NOT_FOUND)
         val reviews = reviewRepository.findAllByAuthor(user)
 
-        return reviews.map { ReviewResponse.of(it) }
+        return reviews.map {
+            val itemOptionValues = itemOptionValueRepository.findAllByItemOption(it.itemOption)
+            ReviewResponse.of(it, itemOptionValues)
+        }
     }
 
     @Transactional
