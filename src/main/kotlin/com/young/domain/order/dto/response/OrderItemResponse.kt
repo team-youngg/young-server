@@ -20,7 +20,7 @@ data class OrderItemResponse(
                optionValues: List<ItemOptionValue>): OrderItemResponse {
             return OrderItemResponse(
                 id = orderItem.item.id!!,
-                orderItemOptionId = option.id!!,
+                orderItemOptionId = option.id!!, // 리뷰 작성할 때 필요함
                 name = orderItem.item.name,
                 description = orderItem.item.description,
                 price = orderItem.price,
