@@ -7,6 +7,7 @@ import com.young.domain.order.domain.entity.OrderItemOption
 
 data class OrderItemResponse(
     val id: Long,
+    val orderItemOptionId: Long,
     val name: String,
     val description: String,
     val price: Long,
@@ -19,6 +20,7 @@ data class OrderItemResponse(
                optionValues: List<ItemOptionValue>): OrderItemResponse {
             return OrderItemResponse(
                 id = orderItem.item.id!!,
+                orderItemOptionId = option.id!!,
                 name = orderItem.item.name,
                 description = orderItem.item.description,
                 price = orderItem.price,

@@ -1,6 +1,7 @@
 package com.young.domain.review.domain.entity
 
 import com.young.domain.option.domain.entity.ItemOption
+import com.young.domain.order.domain.entity.OrderItemOption
 import com.young.domain.user.domain.entity.User
 import com.young.global.common.BaseEntity
 import jakarta.persistence.*
@@ -19,7 +20,7 @@ class Review (
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "option_id", nullable = false)
-    val itemOption: ItemOption,
+    val itemOption: OrderItemOption,
 
     var comment: String,
 

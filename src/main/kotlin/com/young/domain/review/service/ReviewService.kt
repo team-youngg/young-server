@@ -4,6 +4,8 @@ import com.young.domain.item.error.ItemError
 import com.young.domain.item.repository.ItemRepository
 import com.young.domain.option.repository.ItemOptionRepository
 import com.young.domain.option.repository.ItemOptionValueRepository
+import com.young.domain.order.error.OrderError
+import com.young.domain.order.repository.OrderItemOptionRepository
 import com.young.domain.review.domain.entity.Review
 import com.young.domain.review.domain.entity.ReviewImage
 import com.young.domain.review.dto.request.CreateReviewRequest
@@ -24,17 +26,18 @@ class ReviewService (
     private val securityHolder: SecurityHolder,
     private val itemOptionRepository: ItemOptionRepository,
     private val itemRepository: ItemRepository,
-    private val itemOptionValueRepository: ItemOptionValueRepository
+    private val itemOptionValueRepository: ItemOptionValueRepository,
+    private val orderItemOptionRepository: OrderItemOptionRepository,
 ) {
     @Transactional
     fun createReview(request: CreateReviewRequest) {
         val user = securityHolder.user ?: throw CustomException(UserError.USER_NOT_FOUND)
-        val itemOption = itemOptionRepository.findByIdOrNull(request.optionId)
-            ?: throw CustomException(ItemError.OPTION_NOT_FOUND)
+        val orderItemOption = orderItemOptionRepository.findByIdOrNull(request.orderItemOptionId)
+            ?: throw CustomException(OrderError.ORDER_NOT_FOUND)
 
         val review = Review(
             author = user,
-            itemOption = itemOption,
+            itemOption = orderItemOption,
             comment = request.comment,
             star = request.star,
         )
@@ -51,7 +54,7 @@ class ReviewService (
         val reviews = itemOptions.flatMap { reviewRepository.findAllByItemOption(it) }
 
         return reviews.map {
-            val itemOptionValues = itemOptionValueRepository.findAllByItemOption(it.itemOption)
+            val itemOptionValues = itemOptionValueRepository.findAllByItemOption(it.itemOption.itemOption)
             ReviewResponse.of(it, itemOptionValues)
         }
     }
@@ -62,7 +65,7 @@ class ReviewService (
         val reviews = reviewRepository.findAllByAuthor(user)
 
         return reviews.map {
-            val itemOptionValues = itemOptionValueRepository.findAllByItemOption(it.itemOption)
+            val itemOptionValues = itemOptionValueRepository.findAllByItemOption(it.itemOption.itemOption)
             ReviewResponse.of(it, itemOptionValues)
         }
     }

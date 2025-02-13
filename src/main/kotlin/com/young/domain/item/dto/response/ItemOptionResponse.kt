@@ -9,7 +9,7 @@ data class ItemOptionResponse (
     companion object {
         fun of(itemOptionValues: List<ItemOptionValue>) : ItemOptionResponse {
             return ItemOptionResponse(
-                id = itemOptionValues.firstOrNull()?.id ?: 0, // 리뷰 쓸 떄 필요함
+                id = itemOptionValues.firstOrNull()?.itemOption?.id ?: 0,
                 optionValues = itemOptionValues.map{ ItemOptionValueResponse.of(it) }
             )
         }
