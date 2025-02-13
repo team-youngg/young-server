@@ -22,6 +22,8 @@ class Order (
     @JoinColumn(name = "order_info_id", nullable = false)
     val orderInfo: UserOrderInfo,
 
+    val orderRequest: String,
+
     @Column(nullable = true)
     var amount: Long? = null,
 

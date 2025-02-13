@@ -48,7 +48,8 @@ class OrderService (
         val order = Order(
             user = user,
             status = OrderStatus.PENDING,
-            orderInfo = orderInfo
+            orderInfo = orderInfo,
+            orderRequest = requests.orderRequest,
         )
         orderRepository.save(order)
 
