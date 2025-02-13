@@ -1,0 +1,25 @@
+package com.young.domain.review.domain.entity
+
+import com.young.domain.option.domain.entity.ItemOption
+import com.young.domain.user.domain.entity.User
+import com.young.global.common.BaseEntity
+import jakarta.persistence.*
+
+@Entity
+@Table(name = "reviews")
+class Review (
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long? = null,
+
+    val star: Float,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    val author: User,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "option_id", nullable = false)
+    val itemOption: ItemOption,
+
+    val comment: String,
+) : BaseEntity()
