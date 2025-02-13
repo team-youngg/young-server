@@ -7,10 +7,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @Tag(name = "상품 검색", description = "상품 검색 api")
 @RestController
@@ -30,4 +27,10 @@ class ItemSearchController(
         @RequestParam(value = "max", required = false) maxPrice: Long?,
         @PageableDefault pageable: Pageable
     ) = itemSearchService.searchItemsByPrice(minPrice, maxPrice, pageable)
+
+    @Operation(summary = "상품 카테고리별 조회", description = "상품을 카테고리별로 조회합니다.")
+    @GetMapping("/category/{categoryId}")
+    fun getItems(@PathVariable categoryId: Long, @PageableDefault pageable: Pageable)
+            = itemSearchService.getItemsByCategory(categoryId, pageable)
+
 }

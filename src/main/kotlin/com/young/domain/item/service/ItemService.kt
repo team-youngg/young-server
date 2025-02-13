@@ -126,52 +126,6 @@ class ItemService (
     }
 
     @Transactional
-    fun getItemsByCategory(categoryId: Long, pageable: Pageable): List<ItemResponse> {
-        val user = securityHolder.user
-        val categoryIds = getAllSubCategoryIds(categoryId)
-        val itemCategories = itemCategoryRepository.findByCategoryIdIn(categoryIds).toList()
-        return itemCategories.map { it.item }
-            .distinct()
-            .drop(pageable.offset.toInt())
-            .take(pageable.pageSize)
-            .map { itemUtil.toItemResponse(it, user) }
-    }
-
-    private fun getAllSubCategoryIds(categoryId: Long): List<Long> {
-        val categoryIds = mutableSetOf(categoryId)
-        val category = categoryRepository.findById(categoryId).orElse(null) ?: return categoryIds.toList()
-        var currentCategory: Category? = category
-        var isFromTotal = false
-
-        while (currentCategory?.parentId != null) {
-            if (currentCategory.parentId == 3L) {
-                isFromTotal = true
-                break
-            }
-            currentCategory = categoryRepository.findById(currentCategory.parentId!!).orElse(null)
-        }
-
-        if (isFromTotal) {
-            listOf(1L, 2L, 3L).forEach { genderCategoryId ->
-                categoryRepository.findByParentId(genderCategoryId)
-                    .firstOrNull { it.name == category.name }
-                    ?.let { categoryIds.add(it.id!!) }
-            }
-        }
-
-        val queue: Queue<Long> = LinkedList(categoryIds)
-        while (queue.isNotEmpty()) {
-            val currentId = queue.poll()
-            val subCategories = categoryRepository.findByParentId(currentId)
-            subCategories.forEach {
-                if (categoryIds.add(it.id!!)) queue.add(it.id)
-            }
-        }
-
-        return categoryIds.toList()
-    }
-
-    @Transactional
     fun updateItem(request: UpdateItemRequest, itemId: Long) {
         val item = itemRepository.findByIdOrNull(itemId) ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
 

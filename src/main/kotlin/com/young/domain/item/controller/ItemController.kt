@@ -34,11 +34,6 @@ class ItemController (
     fun updateStock(@RequestBody request: UpdateStockRequest, @PathVariable itemOptionId: Long)
     = itemService.updateStock(request, itemOptionId)
 
-    @Operation(summary = "상품 카테고리별 조회", description = "상품을 카테고리별로 조회합니다.")
-    @GetMapping("/category/{categoryId}")
-    fun getItems(@PathVariable categoryId: Long, @PageableDefault pageable: Pageable)
-    = itemService.getItemsByCategory(categoryId, pageable)
-
     @Operation(summary = "상품 수정", description = "상품 정보를 수정합니다.")
     @PatchMapping("/{itemId}")
     fun updateItem(@RequestBody request: UpdateItemRequest, @PathVariable itemId: Long)
