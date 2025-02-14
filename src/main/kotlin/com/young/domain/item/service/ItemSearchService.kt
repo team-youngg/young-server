@@ -6,6 +6,7 @@ import com.young.domain.category.repository.ItemCategoryRepository
 import com.young.domain.item.dto.response.ItemResponse
 import com.young.domain.item.repository.ItemRepository
 import com.young.domain.item.util.ItemUtil
+import com.young.global.common.PageResponse
 import com.young.global.security.SecurityHolder
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -21,10 +22,12 @@ class ItemSearchService (
     private val categoryRepository: CategoryRepository
 ) {
     @Transactional(readOnly = true)
-    fun searchItems(query: String, pageable: Pageable): List<ItemResponse> {
+    fun searchItems(query: String, pageable: Pageable): PageResponse<List<ItemResponse>> {
         val user = securityHolder.user
-        val items = itemRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(query, query, pageable)
-        return items.map { itemUtil.toItemResponse(it, user) }
+        val items = itemRepository
+            .findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(query, query, pageable)
+            .map { itemUtil.toItemResponse(it, user) }
+        return PageResponse.of(items)
     }
 
     private fun getAllSubCategoryIds(categoryId: Long): List<Long> {
@@ -67,7 +70,7 @@ class ItemSearchService (
         minPrice: Long?,
         maxPrice: Long?,
         pageable: Pageable
-    ): List<ItemResponse> {
+    ): PageResponse<List<ItemResponse>> {
         val user = securityHolder.user
         val categoryIds = getAllSubCategoryIds(categoryId)
 
@@ -81,8 +84,9 @@ class ItemSearchService (
             else -> itemCategoryRepository.findByCategoryIdIn(categoryIds, pageable)
         }
 
-        val items = itemCategories.map { it.item }.distinct()
+        val items = itemCategories
+            .map { itemUtil.toItemResponse(it.item, user) }
 
-        return items.map { itemUtil.toItemResponse(it, user) }
+        return PageResponse.of(items)
     }
 }

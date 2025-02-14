@@ -21,9 +21,11 @@ import com.young.domain.option.domain.entity.ItemOptionValue
 import com.young.domain.option.repository.ItemOptionRepository
 import com.young.domain.option.repository.ItemOptionValueRepository
 import com.young.domain.wish.repository.WishRepository
+import com.young.global.common.PageResponse
 import com.young.global.exception.CustomException
 import com.young.global.security.SecurityHolder
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -118,11 +120,12 @@ class ItemService (
     }
 
     @Transactional
-    fun getItems(pageable: Pageable): List<ItemResponse> {
+    fun getItems(pageable: Pageable): PageResponse<List<ItemResponse>> {
         val user = securityHolder.user
-        val items = itemRepository.findAllByOrderByCreatedAtDesc(pageable).toList()
+        val items = itemRepository.findAllByOrderByCreatedAtDesc(pageable)
+            .map { itemUtil.toItemResponse(it, user) }
 
-        return items.map { itemUtil.toItemResponse(it, user) }
+        return PageResponse.of(items)
     }
 
     @Transactional
