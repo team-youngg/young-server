@@ -17,7 +17,7 @@ class ItemSearchController(
 ) {
     @Operation(summary = "키워드 검색", description = "상품 이름과 설명의 키워드로 검색합니다.")
     @GetMapping("/search")
-    fun searchItems(@RequestParam("q") query: String, @PageableDefault pageable: Pageable): List<ItemResponse>
+    fun searchItems(@RequestParam("q") query: String, @PageableDefault pageable: Pageable)
     = itemSearchService.searchItems(query, pageable)
 
     @Operation(summary = "카테고리 별 검색", description = "카테고리별로 검색하고 가격 조건을 추가하여 필터링합니다.")
