@@ -11,21 +11,31 @@ import org.springframework.web.bind.annotation.*
 
 @Tag(name = "상품 검색", description = "상품 검색 api")
 @RestController
-@RequestMapping("/items")
+@RequestMapping("/items/search")
 class ItemSearchController(
     private val itemSearchService: ItemSearchService
 ) {
     @Operation(summary = "키워드 검색", description = "상품 이름과 설명의 키워드로 검색합니다.")
-    @GetMapping("/search")
+    @GetMapping("")
     fun searchItems(@RequestParam("q") query: String, @PageableDefault pageable: Pageable)
     = itemSearchService.searchItems(query, pageable)
 
-    @Operation(summary = "카테고리 별 검색", description = "카테고리별로 검색하고 가격 조건을 추가하여 필터링합니다.")
-    @GetMapping("/category/{categoryId}")
-    fun getItemsByCategoryAndPrice(
-        @PathVariable categoryId: Long,
+//    @Operation(summary = "카테고리 별 검색", description = "카테고리별로 검색하고 가격 조건을 추가하여 필터링합니다.")
+//    @GetMapping("/category/{categoryId}")
+//    fun getItemsByCategoryAndPrice(
+//        @PathVariable categoryId: Long,
+//        @RequestParam(value = "min", required = false) minPrice: Long?,
+//        @RequestParam(value = "max", required = false) maxPrice: Long?,
+//        @PageableDefault pageable: Pageable
+//    ) = itemSearchService.getItemsByCategoryAndPrice(categoryId, minPrice, maxPrice, pageable)
+
+    @Operation(summary = "카테고리별 검색", description = "성별과 카테고리별로 검색하고 가격 조건을 추가하여 필터링합니다.")
+    @GetMapping("/c")
+    fun searchItemsByGenderAndItem(
+        @RequestParam gender: String,
+        @RequestParam item: String,
         @RequestParam(value = "min", required = false) minPrice: Long?,
         @RequestParam(value = "max", required = false) maxPrice: Long?,
         @PageableDefault pageable: Pageable
-    ) = itemSearchService.getItemsByCategoryAndPrice(categoryId, minPrice, maxPrice, pageable)
+    ) = itemSearchService.searchItemsByGenderAndItem(gender, item, minPrice, maxPrice, pageable)
 }
