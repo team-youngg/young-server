@@ -18,8 +18,10 @@ import com.young.domain.option.repository.ItemOptionValueRepository
 import com.young.domain.item.util.ItemUtil
 import com.young.domain.user.error.UserError
 import com.young.domain.wish.repository.WishRepository
+import com.young.global.common.PageResponse
 import com.young.global.exception.CustomException
 import com.young.global.security.SecurityHolder
+import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -74,37 +76,6 @@ class CartService (
     }
 
     @Transactional
-    fun getCartItems(pageable: Pageable): List<CartItemResponse> {
-        val user = securityHolder.user ?: throw CustomException(UserError.USER_NOT_FOUND)
-        val cart = cartRepository.findByUser(user) ?: throw CustomException(CartError.CART_NOT_FOUND)
-        val cartItems = cartItemRepository.findAllByCart(cart, pageable)
-
-        return cartItems.map { cartItem ->
-            val cartItemOptions = cartItemOptionRepository.findByCartItem(cartItem)
-            val itemOptionValues = cartItemOptions.map { cartItemOption ->
-                val itemOptionValue = itemOptionValueRepository.findAllByItemOption(cartItemOption.itemOption)
-                val item = cartItemOption.cartItem.item
-                val itemElements = itemUtil.getItemElements(item)
-                val wishItemIds: Set<Long> = if (user != null) {
-                    wishRepository.findItemIdsByUser(user).toSet()
-                } else {
-                    emptySet()
-                }
-                val itemResponse = ItemResponse.of(
-                    item,
-                    itemElements.images,
-                    itemElements.options,
-                    itemElements.optionValues,
-                    itemElements.categories,
-                    isWish = item.id in wishItemIds
-                )
-                CartItemResponse.of(cartItemOption, itemOptionValue, itemResponse)
-            }
-            itemOptionValues
-        }.flatten()
-    }
-
-    @Transactional
     fun updateCartOption(request: UpdateCartOptionRequest) {
         val cartItemOption = cartItemOptionRepository.findByIdOrNull(request.cartItemOptionId)
             ?: throw CustomException(ItemError.OPTION_NOT_FOUND)
@@ -124,5 +95,33 @@ class CartService (
             ?: throw CustomException(ItemError.OPTION_NOT_FOUND)
 
         cartItemOptionRepository.delete(cartItemOption)
+    }
+
+    @Transactional
+    fun getCartItems(pageable: Pageable): PageResponse<List<CartItemResponse>> {
+        val user = securityHolder.user ?: throw CustomException(UserError.USER_NOT_FOUND)
+        val cart = cartRepository.findByUser(user) ?: throw CustomException(CartError.CART_NOT_FOUND)
+        val cartItemsPage = cartItemRepository.findAllByCart(cart, pageable)
+
+        val cartItemResponses = cartItemsPage.content.flatMap { cartItem ->
+            cartItemOptionRepository.findByCartItem(cartItem).map { cartItemOption ->
+                val itemOptionValues = itemOptionValueRepository.findAllByItemOption(cartItemOption.itemOption)
+                val item = cartItemOption.cartItem.item
+                val itemElements = itemUtil.getItemElements(item)
+                val wishItemIds = wishRepository.findItemIdsByUser(user).toSet()
+                val itemResponse = ItemResponse.of(
+                    item,
+                    itemElements.images,
+                    itemElements.options,
+                    itemElements.optionValues,
+                    itemElements.categories,
+                    isWish = item.id in wishItemIds
+                )
+                CartItemResponse.of(cartItemOption, itemOptionValues, itemResponse)
+            }
+        }
+
+        val responsePage = PageImpl(cartItemResponses, pageable, cartItemsPage.totalElements)
+        return PageResponse.of(responsePage)
     }
 }
