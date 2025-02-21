@@ -32,35 +32,35 @@ class DummyInitializer(
         if (categoryRepository.count() > 0) return // 이미 데이터가 있으면 실행 안 함
 
         // ✅ 1. 카테고리 추가 (여성, 남성, 전체)
-        val women = categoryRepository.save(Category(name = "여성", parentId = null))
-        val men = categoryRepository.save(Category(name = "남성", parentId = null))
-        val all = categoryRepository.save(Category(name = "전체", parentId = null))
+        val women = categoryRepository.save(Category(name = "men", parentId = null))
+        val men = categoryRepository.save(Category(name = "women", parentId = null))
+        val all = categoryRepository.save(Category(name = "none", parentId = null))
 
         // ✅ 2. 서브 카테고리 추가
-        val topsWomen = categoryRepository.save(Category(name = "상의", parentId = women.id!!))
-        val bottomsWomen = categoryRepository.save(Category(name = "하의", parentId = women.id!!))
-        val outerWomen = categoryRepository.save(Category(name = "아우터", parentId = women.id!!))
+        val topsWomen = categoryRepository.save(Category(name = "top", parentId = women.id!!))
+        val bottomsWomen = categoryRepository.save(Category(name = "bottom", parentId = women.id!!))
+        val outerWomen = categoryRepository.save(Category(name = "outer", parentId = women.id!!))
 
-        val topsMen = categoryRepository.save(Category(name = "상의", parentId = men.id!!))
-        val bottomsMen = categoryRepository.save(Category(name = "하의", parentId = men.id!!))
-        val outerMen = categoryRepository.save(Category(name = "아우터", parentId = men.id!!))
+        val topsMen = categoryRepository.save(Category(name = "top", parentId = men.id!!))
+        val bottomsMen = categoryRepository.save(Category(name = "bottom", parentId = men.id!!))
+        val outerMen = categoryRepository.save(Category(name = "outer", parentId = men.id!!))
 
-        val topsAll = categoryRepository.save(Category(name = "상의", parentId = all.id!!))
-        val bottomsAll = categoryRepository.save(Category(name = "하의", parentId = all.id!!))
-        val outerAll = categoryRepository.save(Category(name = "아우터", parentId = all.id!!))
+        val topsAll = categoryRepository.save(Category(name = "top", parentId = all.id!!))
+        val bottomsAll = categoryRepository.save(Category(name = "bottom", parentId = all.id!!))
+        val outerAll = categoryRepository.save(Category(name = "outer", parentId = all.id!!))
 
         // ✅ 3. 상세 카테고리 추가
-        val hoodieWomen = categoryRepository.save(Category(name = "후드티", parentId = topsWomen.id!!))
-        val hoodieMen = categoryRepository.save(Category(name = "후드티", parentId = topsMen.id!!))
-        val hoodieAll = categoryRepository.save(Category(name = "후드티", parentId = topsAll.id!!))
+        val hoodieWomen = categoryRepository.save(Category(name = "hoodie", parentId = topsWomen.id!!))
+        val hoodieMen = categoryRepository.save(Category(name = "hoodie", parentId = topsMen.id!!))
+        val hoodieAll = categoryRepository.save(Category(name = "hoodie", parentId = topsAll.id!!))
 
-        val jeansWomen = categoryRepository.save(Category(name = "청바지", parentId = bottomsWomen.id!!))
-        val jeansMen = categoryRepository.save(Category(name = "청바지", parentId = bottomsMen.id!!))
-        val jeansAll = categoryRepository.save(Category(name = "청바지", parentId = bottomsAll.id!!))
+        val jeansWomen = categoryRepository.save(Category(name = "jeans", parentId = bottomsWomen.id!!))
+        val jeansMen = categoryRepository.save(Category(name = "jeans", parentId = bottomsMen.id!!))
+        val jeansAll = categoryRepository.save(Category(name = "jeans", parentId = bottomsAll.id!!))
 
-        val coatWomen = categoryRepository.save(Category(name = "코트", parentId = outerWomen.id!!))
-        val coatMen = categoryRepository.save(Category(name = "코트", parentId = outerMen.id!!))
-        val coatAll = categoryRepository.save(Category(name = "코트", parentId = outerAll.id!!))
+        val coatWomen = categoryRepository.save(Category(name = "coat", parentId = outerWomen.id!!))
+        val coatMen = categoryRepository.save(Category(name = "coat", parentId = outerMen.id!!))
+        val coatAll = categoryRepository.save(Category(name = "coat", parentId = outerAll.id!!))
 
         // ✅ 4. 아이템 추가 (옷 위주로 확장)
         val item1 = itemRepository.save(

@@ -19,4 +19,7 @@ interface ItemCategoryRepository : JpaRepository<ItemCategory, Long> {
     fun findByCategoryIdInAndItemPriceLessThanEqual(
         categoryIds: List<Long>, maxPrice: Long, pageable: Pageable): Page<ItemCategory>
     fun findByCategoryIdIn(categoryIds: List<Long>, pageable: Pageable): Page<ItemCategory>
+
+    fun findByItemIdAndCategoryId(itemId: Long, categoryId: Long): ItemCategory?
+    fun deleteAllByCategoryId(categoryId: Long)
 }
