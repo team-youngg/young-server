@@ -16,5 +16,4 @@ class UserService(
         val user = securityHolder.user ?: throw CustomException(UserError.USER_NOT_FOUND)
         return UserResponse.of(user)
     }
-
 }
