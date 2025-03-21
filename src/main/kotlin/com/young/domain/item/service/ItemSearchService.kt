@@ -32,7 +32,6 @@ class ItemSearchService (
         return PageResponse.of(items)
     }
 
-    // 기존 로직에서 카테고리 트리 전체 id를 조회하는 메서드
     private fun getAllSubCategoryIds(categoryId: Long): List<Long> {
         val categoryIds = mutableSetOf(categoryId)
         val category = categoryRepository.findById(categoryId).orElse(null) ?: return categoryIds.toList()
@@ -70,22 +69,21 @@ class ItemSearchService (
     @Transactional(readOnly = true)
     fun searchItemsByGenderAndItem(
         gender: String,
-        item: String,
+        item: String?,
         minPrice: Long?,
         maxPrice: Long?,
         pageable: Pageable
     ): PageResponse<List<ItemResponse>> {
         val user = securityHolder.user
 
-        // 카테고리 방식 유지: item(검색어)를 포함하는 카테고리 목록 조회
-        val categories = categoryRepository.findByNameContainingIgnoreCase(item)
+        val searchItem = item?.takeIf { it.isNotBlank() } ?: ""
+        val categories = categoryRepository.findByNameContainingIgnoreCase(searchItem)
         if (categories.isEmpty()) {
             return PageResponse.of(Page.empty())
         }
 
         val categoryIds = categories.flatMap { getAllSubCategoryIds(it.id!!) }.distinct()
 
-        // gender가 "none"이면 성별 조건 없이, 아니라면 아이템의 gender 필드도 조건에 추가
         val itemCategories = when {
             minPrice != null && maxPrice != null -> {
                 if (gender.equals("none", ignoreCase = true)) {

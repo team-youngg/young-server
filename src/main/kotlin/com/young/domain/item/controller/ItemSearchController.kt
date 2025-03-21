@@ -33,7 +33,7 @@ class ItemSearchController(
     @GetMapping("/c")
     fun searchItemsByGenderAndItem(
         @RequestParam gender: String,
-        @RequestParam item: String,
+        @RequestParam(required = false) item: String?,
         @RequestParam(value = "min", required = false) minPrice: Long?,
         @RequestParam(value = "max", required = false) maxPrice: Long?,
         @PageableDefault pageable: Pageable
