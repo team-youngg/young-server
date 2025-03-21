@@ -64,13 +64,13 @@ class DummyInitializer(
 
         // ✅ 4. 아이템 추가 (옷 위주로 확장)
         val item1 = itemRepository.save(
-            Item(name = "오버핏 후드티", description = "기모 안감, 겨울용", price = 45000, detail = "오버핏 스타일, 남녀 공용")
+            Item(name = "오버핏 후드티", description = "기모 안감, 겨울용", price = 45000, detail = "오버핏 스타일, 남녀 공용", gender = "all")
         )
         val item2 = itemRepository.save(
-            Item(name = "슬림핏 청바지", description = "신축성 좋은 슬림핏 청바지", price = 59000, detail = "스판 원단, 다크 블루")
+            Item(name = "슬림핏 청바지", description = "신축성 좋은 슬림핏 청바지", price = 59000, detail = "스판 원단, 다크 블루", gender = "all")
         )
         val item3 = itemRepository.save(
-            Item(name = "롱 코트", description = "겨울철 필수 아이템, 롱 코트", price = 120000, detail = "울 80%, 방풍 기능")
+            Item(name = "롱 코트", description = "겨울철 필수 아이템, 롱 코트", price = 120000, detail = "울 80%, 방풍 기능", gender = "all")
         )
 
         // ✅ 3. 아이템을 카테고리에 연결

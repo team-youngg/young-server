@@ -52,6 +52,7 @@ class ItemService (
             description = request.description,
             price = request.price,
             detail = request.detail,
+            gender = request.gender,
         )
         itemRepository.save(item)
 
