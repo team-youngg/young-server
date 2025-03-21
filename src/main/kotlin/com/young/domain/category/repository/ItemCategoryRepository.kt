@@ -22,4 +22,32 @@ interface ItemCategoryRepository : JpaRepository<ItemCategory, Long> {
 
     fun findByItemIdAndCategoryId(itemId: Long, categoryId: Long): ItemCategory?
     fun deleteAllByCategoryId(categoryId: Long)
+
+    fun findByCategoryIdInAndItemGenderAndItemPriceBetween(
+        categoryIds: List<Long>,
+        gender: String,
+        minPrice: Long,
+        maxPrice: Long,
+        pageable: Pageable
+    ): Page<ItemCategory>
+
+    fun findByCategoryIdInAndItemGenderAndItemPriceGreaterThanEqual(
+        categoryIds: List<Long>,
+        gender: String,
+        minPrice: Long,
+        pageable: Pageable
+    ): Page<ItemCategory>
+
+    fun findByCategoryIdInAndItemGender(
+        categoryIds: List<Long>,
+        gender: String,
+        pageable: Pageable
+    ): Page<ItemCategory>
+
+    fun findByCategoryIdInAndItemGenderAndItemPriceLessThanEqual(
+        categoryIds: List<Long>,
+        gender: String,
+        maxPrice: Long,
+        pageable: Pageable
+    ): Page<ItemCategory>
 }

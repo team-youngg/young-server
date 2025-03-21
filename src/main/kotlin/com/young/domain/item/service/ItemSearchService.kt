@@ -12,7 +12,8 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
+import java.util.LinkedList
+import java.util.Queue
 
 @Service
 class ItemSearchService (
@@ -31,6 +32,7 @@ class ItemSearchService (
         return PageResponse.of(items)
     }
 
+    // 기존 로직에서 카테고리 트리 전체 id를 조회하는 메서드
     private fun getAllSubCategoryIds(categoryId: Long): List<Long> {
         val categoryIds = mutableSetOf(categoryId)
         val category = categoryRepository.findById(categoryId).orElse(null) ?: return categoryIds.toList()
@@ -75,44 +77,47 @@ class ItemSearchService (
     ): PageResponse<List<ItemResponse>> {
         val user = securityHolder.user
 
-        val genderCategoryIds: List<Long> = when (gender) {
-            "men" -> listOf(1L)
-            "women" -> listOf(2L)
-            "none" -> categoryRepository.findAll().mapNotNull { it.id }
-            else -> return PageResponse.of(Page.empty())
-        }
-
-        val allBaseCategoryIds = if (gender.equals("none", ignoreCase = true)) {
-            genderCategoryIds
-        } else {
-            genderCategoryIds.flatMap { getAllSubCategoryIds(it) }
-        }
-
-        val categories = if (gender.equals("none", ignoreCase = true)) {
-            categoryRepository.findByNameContainingIgnoreCase(item)
-        } else {
-            categoryRepository.findByIdInAndNameContainingIgnoreCase(allBaseCategoryIds, item)
-        }
-
+        // 카테고리 방식 유지: item(검색어)를 포함하는 카테고리 목록 조회
+        val categories = categoryRepository.findByNameContainingIgnoreCase(item)
         if (categories.isEmpty()) {
             return PageResponse.of(Page.empty())
         }
 
         val categoryIds = categories.flatMap { getAllSubCategoryIds(it.id!!) }.distinct()
 
+        // gender가 "none"이면 성별 조건 없이, 아니라면 아이템의 gender 필드도 조건에 추가
         val itemCategories = when {
-            minPrice != null && maxPrice != null ->
-                itemCategoryRepository.findByCategoryIdInAndItemPriceBetween(categoryIds, minPrice, maxPrice, pageable)
-            minPrice != null ->
-                itemCategoryRepository.findByCategoryIdInAndItemPriceGreaterThanEqual(categoryIds, minPrice, pageable)
-            maxPrice != null ->
-                itemCategoryRepository.findByCategoryIdInAndItemPriceLessThanEqual(categoryIds, maxPrice, pageable)
-            else ->
-                itemCategoryRepository.findByCategoryIdIn(categoryIds, pageable)
+            minPrice != null && maxPrice != null -> {
+                if (gender.equals("none", ignoreCase = true)) {
+                    itemCategoryRepository.findByCategoryIdInAndItemPriceBetween(categoryIds, minPrice, maxPrice, pageable)
+                } else {
+                    itemCategoryRepository.findByCategoryIdInAndItemGenderAndItemPriceBetween(categoryIds, gender, minPrice, maxPrice, pageable)
+                }
+            }
+            minPrice != null -> {
+                if (gender.equals("none", ignoreCase = true)) {
+                    itemCategoryRepository.findByCategoryIdInAndItemPriceGreaterThanEqual(categoryIds, minPrice, pageable)
+                } else {
+                    itemCategoryRepository.findByCategoryIdInAndItemGenderAndItemPriceGreaterThanEqual(categoryIds, gender, minPrice, pageable)
+                }
+            }
+            maxPrice != null -> {
+                if (gender.equals("none", ignoreCase = true)) {
+                    itemCategoryRepository.findByCategoryIdInAndItemPriceLessThanEqual(categoryIds, maxPrice, pageable)
+                } else {
+                    itemCategoryRepository.findByCategoryIdInAndItemGenderAndItemPriceLessThanEqual(categoryIds, gender, maxPrice, pageable)
+                }
+            }
+            else -> {
+                if (gender.equals("none", ignoreCase = true)) {
+                    itemCategoryRepository.findByCategoryIdIn(categoryIds, pageable)
+                } else {
+                    itemCategoryRepository.findByCategoryIdInAndItemGender(categoryIds, gender, pageable)
+                }
+            }
         }
 
         val items = itemCategories.map { itemUtil.toItemResponse(it.item, user) }
-
         return PageResponse.of(items)
     }
 }
