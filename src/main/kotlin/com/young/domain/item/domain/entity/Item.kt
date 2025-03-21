@@ -19,4 +19,6 @@ class Item (
     var price: Long,
 
     var detail: String,
+
+    var gender: String
 ) : BaseEntity()
