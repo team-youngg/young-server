@@ -29,6 +29,7 @@ class ItemSearchController(
 //        @PageableDefault pageable: Pageable
 //    ) = itemSearchService.getItemsByCategoryAndPrice(categoryId, minPrice, maxPrice, pageable)
 
+
     @Operation(summary = "카테고리별 검색", description = "성별과 카테고리별로 검색하고 가격 조건을 추가하여 필터링합니다.")
     @GetMapping("/c")
     fun searchItemsByGenderAndItem(
