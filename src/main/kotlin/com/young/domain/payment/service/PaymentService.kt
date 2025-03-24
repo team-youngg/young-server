@@ -139,9 +139,9 @@ class PaymentService (
     }
 
     @Transactional
-    fun cancelPayment(cancelRequest: PaymentCancelRequest): PaymentCancelResponse {
+    fun cancelPayment(request: PaymentCancelRequest): PaymentCancelResponse {
         // 주문 및 결제 검증
-        val order = orderRepository.findByIdOrNull(cancelRequest.orderId)
+        val order = orderRepository.findByIdOrNull(request.orderId)
             ?: throw CustomException(OrderError.ORDER_NOT_FOUND)
 
         if (order.status != OrderStatus.PAID) {
@@ -158,9 +158,9 @@ class PaymentService (
         val objectMapper = jacksonObjectMapper()
 
         // 요청 본문은 취소 사유만 전송합니다.
-        val requestBody = mapOf("cancelReason" to cancelRequest.cancelReason)
+        val requestBody = mapOf("cancelReason" to request.cancelReason)
 
-        val url = "/payments/${cancelRequest.paymentKey}/cancel"
+        val url = "/payments/${request.paymentKey}/cancel"
         val response: String = webClient.post()
             .uri(url)
             .bodyValue(requestBody)
