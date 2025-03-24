@@ -10,6 +10,8 @@ import com.young.domain.order.repository.OrderRepository
 import com.young.domain.payment.config.paymentProperties
 import com.young.domain.payment.domain.entity.Payment
 import com.young.domain.payment.dto.request.PayRequest
+import com.young.domain.payment.dto.request.PaymentCancelRequest
+import com.young.domain.payment.dto.response.PaymentCancelResponse
 import com.young.domain.payment.dto.response.PaymentResponse
 import com.young.domain.payment.error.PaymentError
 import com.young.domain.payment.repository.PaymentRepository
@@ -134,5 +136,58 @@ class PaymentService (
 
         order.status = OrderStatus.CANCELED
         orderRepository.save(order)
+    }
+
+    @Transactional
+    fun cancelPayment(cancelRequest: PaymentCancelRequest): PaymentCancelResponse {
+        // 주문 및 결제 검증
+        val order = orderRepository.findByIdOrNull(cancelRequest.orderId)
+            ?: throw CustomException(OrderError.ORDER_NOT_FOUND)
+
+        if (order.status != OrderStatus.PAID) {
+            throw CustomException(PaymentError.PAYMENT_NOT_PAID)
+        }
+
+        // TossPayments 결제 취소 API 호출 (paymentKey를 URL에 포함)
+        val webClient = WebClient.builder()
+            .baseUrl("https://api.tosspayments.com/v1")
+            .defaultHeader("Authorization", getHeader())
+            .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .build()
+
+        val objectMapper = jacksonObjectMapper()
+
+        // 요청 본문은 취소 사유만 전송합니다.
+        val requestBody = mapOf("cancelReason" to cancelRequest.cancelReason)
+
+        val url = "/payments/${cancelRequest.paymentKey}/cancel"
+        val response: String = webClient.post()
+            .uri(url)
+            .bodyValue(requestBody)
+            .retrieve()
+            .onStatus({ it.isError }) { res ->
+                res.bodyToMono(String::class.java).flatMap {
+                    Mono.error(CustomException(PaymentError.API_ERROR, it))
+                }
+            }
+            .bodyToMono(String::class.java)
+            .block() ?: throw CustomException(PaymentError.API_ERROR, "No response")
+
+        println("🔎 Toss API 취소 응답 데이터: $response")
+
+        val cancelResponse = objectMapper.readValue(response, PaymentCancelResponse::class.java)
+
+        if (cancelResponse.status != "CANCELED") {
+            throw CustomException(
+                PaymentError.PAYMENT_CANCELLATION_FAILED,
+                cancelResponse.failure?.message ?: "취소 실패"
+            )
+        }
+
+        // 주문 상태 업데이트 (취소)
+        order.status = OrderStatus.CANCELED
+        orderRepository.save(order)
+
+        return cancelResponse
     }
 }
