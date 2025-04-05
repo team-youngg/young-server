@@ -18,8 +18,11 @@ class ItemCategoryService (
     private val itemRepository: ItemRepository
 ) {
     @Transactional
-    fun createCategory(name: String, parentId: Long?) {
-        val category = Category(name = name, parentId = parentId)
+    fun createCategory(name: String, parentId: Long? = null) {
+        val category = Category(
+            name = name,
+            parentId = parentId
+        )
         categoryRepository.save(category)
     }
 
@@ -56,6 +59,36 @@ class ItemCategoryService (
         // 모든 카테고리 조회
         val allCategories = categoryRepository.findAll()
 
+        // 최상위 카테고리: parentId가 null인 경우
+        val topCategories = allCategories.filter { it.parentId == null }
+
+        // 동일한 이름의 최상위 카테고리가 있을 경우 그룹화
+        val groupedTop = topCategories.groupBy { it.name }
+
+        return groupedTop.map { (topName, topList) ->
+            // 그룹 내의 모든 최상위 카테고리 id 모음
+            val topIds = topList.mapNotNull { it.id }
+
+            // 최상위 카테고리들의 자식(하위 카테고리) 조회
+            val childCategories = allCategories.filter { it.parentId in topIds }
+
+            // 하위 카테고리 이름별로 그룹화 (중복되는 경우 대표 id는 가장 작은 id 사용)
+            val groupedChildren = childCategories.groupBy { it.name }
+            val mergedChildren = groupedChildren.map { (childName, children) ->
+                SubCategoryResponse(
+                    id = children.minOf { it.id!! },
+                    name = childName
+                )
+            }
+            CategoryResponse(name = topName, children = mergedChildren)
+        }
+    }
+
+    @Transactional(readOnly = true)
+    fun getMergedCategories1(): List<com.young.domain.category.service.CategoryResponse> {
+        // 모든 카테고리 조회
+        val allCategories = categoryRepository.findAll()
+
         // 성별 카테고리 id (예: 여성, 남성, 전체)
         val genderCategoryIds = setOf(1L, 2L, 3L)
 
@@ -82,18 +115,18 @@ class ItemCategoryService (
         }
     }
 
-    @Transactional
-    fun createSubCategoryForAllGenders(parentCategoryName: String, subCategoryName: String) {
-        // 기본 카테고리 id (여성, 남성, 전체로 가정: 1, 2, 3)
-        val genderBaseIds = listOf(1L, 2L, 3L)
-        for (baseId in genderBaseIds) {
-            // 기본 카테고리 아래에서 상위 카테고리("상의") 찾기
-            val parentCategory = categoryRepository.findByParentIdAndName(baseId, parentCategoryName)
-                ?: throw IllegalStateException("Parent category '$parentCategoryName' not found under base id $baseId")
-            // 상위 카테고리 아래에 하위 카테고리("셔츠") 추가
-            categoryRepository.save(Category(name = subCategoryName, parentId = parentCategory.id))
-        }
-    }
+//    @Transactional
+//    fun createSubCategoryForAllGenders(parentCategoryName: String, subCategoryName: String) {
+//        // 기본 카테고리 id (여성, 남성, 전체로 가정: 1, 2, 3)
+//        val genderBaseIds = listOf(1L, 2L, 3L)
+//        for (baseId in genderBaseIds) {
+//            // 기본 카테고리 아래에서 상위 카테고리("상의") 찾기
+//            val parentCategory = categoryRepository.findByParentIdAndName(baseId, parentCategoryName)
+//                ?: throw IllegalStateException("Parent category '$parentCategoryName' not found under base id $baseId")
+//            // 상위 카테고리 아래에 하위 카테고리("셔츠") 추가
+//            categoryRepository.save(Category(name = subCategoryName, parentId = parentCategory.id))
+//        }
+//    }
 }
 
 data class CategoryResponse(

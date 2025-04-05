@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.*
 class ItemCategoryController(
     private val categoryService: ItemCategoryService
 ) {
-//    @Operation(summary = "카테고리 추가", description = "새로운 카테고리를 생성합니다")
-//    @PostMapping
-//    fun createCategory(@RequestBody request: CreateCategoryRequest)
-//    = categoryService.createCategory(request.name, request.parentId)
+    @Operation(summary = "카테고리 추가", description = "새로운 카테고리를 생성합니다")
+    @PostMapping
+    fun createCategory(@RequestBody request: CreateCategoryRequest)
+    = categoryService.createCategory(request.name, request.parentId)
 
 //    @Operation(summary = "카테고리 삭제", description = "카테고리를 삭제합니다.")
 //    @DeleteMapping("/{categoryId}")
@@ -39,13 +39,13 @@ class ItemCategoryController(
     @GetMapping
     fun getCategories() = categoryService.getMergedCategories()
 
-    @Operation(summary = "카테고리 추가", description = "새로운 카테고리를 생성합니다.")
-    @PostMapping
-    fun createSubCategoryForAllGenders(
-        @Valid @RequestBody request: CreateSubCategoryRequest
-    ) {
-        categoryService.createSubCategoryForAllGenders(request.parent, request.child)
-    }
+//    @Operation(summary = "카테고리 추가", description = "새로운 카테고리를 생성합니다.")
+//    @PostMapping
+//    fun createSubCategoryForAllGenders(
+//        @Valid @RequestBody request: CreateSubCategoryRequest
+//    ) {
+//        categoryService.createSubCategoryForAllGenders(request.parent, request.child)
+//    }
 }
 
 data class CreateSubCategoryRequest(
@@ -55,7 +55,7 @@ data class CreateSubCategoryRequest(
 
 data class CreateCategoryRequest(
     val name: String,
-    val parentId: Long?
+    val parentId: Long? = null
 )
 
 data class AssignItemRequest(
