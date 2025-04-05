@@ -3,6 +3,7 @@ package com.young.domain.category.controller
 import com.young.domain.category.domain.entity.ItemCategory
 import com.young.domain.category.dto.response.CategoryResponse
 import com.young.domain.category.service.ItemCategoryService
+import com.young.domain.category.service.UpdateCategoryRequest
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -46,6 +47,11 @@ class ItemCategoryController(
 //    ) {
 //        categoryService.createSubCategoryForAllGenders(request.parent, request.child)
 //    }
+
+    @Operation(summary = "카테고리 수정", description = "카테고리의 이름 수정")
+    @PatchMapping("/{categoryId}")
+    fun updateCategory(@PathVariable categoryId: Long, @RequestBody request: UpdateCategoryRequest)
+    = categoryService.updateCategoryName(request, categoryId)
 }
 
 data class CreateSubCategoryRequest(

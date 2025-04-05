@@ -8,6 +8,7 @@ import com.young.domain.category.repository.ItemCategoryRepository
 import com.young.domain.item.error.ItemError
 import com.young.domain.item.repository.ItemRepository
 import com.young.global.exception.CustomException
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -26,11 +27,11 @@ class ItemCategoryService (
         categoryRepository.save(category)
     }
 
-    @Transactional
-    fun deleteCategory(categoryId: Long) {
-        itemCategoryRepository.deleteAllByCategoryId(categoryId)
-        categoryRepository.deleteById(categoryId)
-    }
+//    @Transactional
+//    fun deleteCategory(categoryId: Long) {
+//        itemCategoryRepository.deleteAllByCategoryId(categoryId)
+//        categoryRepository.deleteById(categoryId)
+//    }
 
     @Transactional
     fun assignItemToCategory(itemId: Long, categoryId: Long): ItemCategory {
@@ -127,6 +128,25 @@ class ItemCategoryService (
 //            categoryRepository.save(Category(name = subCategoryName, parentId = parentCategory.id))
 //        }
 //    }
+
+    @Transactional
+    fun deleteCategory(categoryId: Long) {
+        // 카테고리를 참조하는 상품이 있는지 확인 (ItemCategory 테이블에서 카운트)
+        val referenceCount = itemCategoryRepository.countByCategoryId(categoryId)
+        if (referenceCount > 0) {
+            throw CustomException(ItemError.CATEGORY_REFERENCED) // 참조하는 상품이 있음을 알리는 예외 처리
+        }
+        // 참조하는 상품이 없으므로 카테고리 삭제
+        categoryRepository.deleteById(categoryId)
+    }
+
+    @Transactional
+    fun updateCategoryName(request: UpdateCategoryRequest, categoryId: Long) {
+        val category = categoryRepository.findByIdOrNull(categoryId)
+            ?: throw CustomException(ItemError.CATEGORY_NOT_FOUND)
+        category.name = request.name
+        categoryRepository.save(category)
+    }
 }
 
 data class CategoryResponse(
@@ -136,5 +156,9 @@ data class CategoryResponse(
 
 data class SubCategoryResponse(
     val id: Long,
+    val name: String
+)
+
+data class UpdateCategoryRequest(
     val name: String
 )

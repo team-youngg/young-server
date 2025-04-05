@@ -50,4 +50,6 @@ interface ItemCategoryRepository : JpaRepository<ItemCategory, Long> {
         maxPrice: Long,
         pageable: Pageable
     ): Page<ItemCategory>
+
+    fun countByCategoryId(categoryId: Long): Long
 }
