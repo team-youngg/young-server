@@ -12,6 +12,7 @@ spring:
               - profile
 
           google-admin:
+            provider: google
             redirect-uri: ${OAUTH_REDIRECT_URI_ADMIN}
             client-id: ${OAUTH_CLIENT_ID_ADMIN}
             client-secret: ${OAUTH_CLIENT_SECRET_ADMIN}
