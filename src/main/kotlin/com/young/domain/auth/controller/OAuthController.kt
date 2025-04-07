@@ -17,5 +17,10 @@ class OAuthController (
 ) {
     @Operation(summary = "구글 로그인", description = "구글 로그인 합니다.")
     @PostMapping("/google")
-    fun login(@RequestBody request: GoogleLoginRequest) = oAuthService.login(request)
+    fun login(@RequestBody request: GoogleLoginRequest) = oAuthService.login(request,false)
+
+    @Operation(summary = "관리자 구글 로그인", description = "관리자 구글 로그인 합니다.")
+    @PostMapping("/google/admin")
+    fun loginAdmin(@RequestBody request: GoogleLoginRequest) = oAuthService.login(request,true)
+
 }

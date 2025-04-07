@@ -1,6 +1,7 @@
 package com.young.domain.auth.service
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.young.domain.auth.config.GoogleAdminProperties
 import com.young.domain.auth.config.GoogleProperties
 import com.young.domain.auth.dto.request.GoogleLoginRequest
 import com.young.domain.auth.dto.response.GoogleUserResponse
@@ -27,10 +28,11 @@ class OAuthService (
     private val googleProperties: GoogleProperties,
     private val webClient: WebClient.Builder,
     private val cartRepository: CartRepository,
+    private val googleAdminProperties: GoogleAdminProperties
 ) {
     @Transactional
-    fun login(request: GoogleLoginRequest): JwtResponse {
-        val googleAccessToken = getGoogleAccessToken(request)
+    fun login(request: GoogleLoginRequest, isAdmin: Boolean): JwtResponse {
+        val googleAccessToken = getGoogleAccessToken(request, isAdmin)
         val googleUser = getGoogleUser(googleAccessToken)
 
         val user = User(
@@ -53,14 +55,16 @@ class OAuthService (
     }
 
     @Transactional
-    fun getGoogleAccessToken(request: GoogleLoginRequest): String {
+    fun getGoogleAccessToken(request: GoogleLoginRequest, isAdmin: Boolean): String {
         val requestUrl = "https://oauth2.googleapis.com/token"
+
+        val redirectUri = if (isAdmin) googleAdminProperties.redirectUri else googleProperties.redirectUri
 
         val formData: MultiValueMap<String, String> = LinkedMultiValueMap()
         formData.add("code", request.code)
         formData.add("client_id", googleProperties.clientId)
         formData.add("client_secret", googleProperties.clientSecret)
-        formData.add("redirect_uri", googleProperties.redirectUri)
+        formData.add("redirect_uri", redirectUri)
         formData.add("grant_type", "authorization_code")
 
         return webClient.build()

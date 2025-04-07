@@ -10,3 +10,11 @@ spring:
             scope:
               - email
               - profile
+
+          google-admin:
+            redirect-uri: ${OAUTH_REDIRECT_URI_ADMIN}
+            client-id: ${OAUTH_CLIENT_ID_ADMIN}
+            client-secret: ${OAUTH_CLIENT_SECRET_ADMIN}
+            scope:
+              - email
+              - profile
