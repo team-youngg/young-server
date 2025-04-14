@@ -69,6 +69,8 @@ class ItemCategoryService (
         return groupedTop.map { (topName, topList) ->
             // 그룹 내의 모든 최상위 카테고리 id 모음
             val topIds = topList.mapNotNull { it.id }
+            // 대표 id 선택 (예: 가장 작은 id 사용)
+            val topId = topIds.minOrNull() ?: throw IllegalStateException("최상위 카테고리의 id가 존재하지 않습니다.")
 
             // 최상위 카테고리들의 자식(하위 카테고리) 조회
             val childCategories = allCategories.filter { it.parentId in topIds }
@@ -81,8 +83,9 @@ class ItemCategoryService (
                     name = childName
                 )
             }
-            CategoryResponse(name = topName, children = mergedChildren)
+            CategoryResponse(id = topId, name = topName, children = mergedChildren)
         }
+
     }
 
     @Transactional(readOnly = true)
@@ -100,8 +103,11 @@ class ItemCategoryService (
         val groupedTop = topCategories.groupBy { it.name }
 
         return groupedTop.map { (topName, topList) ->
-            // 여러 상위 카테고리의 id들을 모음
+            // 그룹 내의 모든 상위 카테고리 id 모음
             val topIds = topList.mapNotNull { it.id }
+            // 대표 id 선택 (예: 가장 작은 id)
+            val topId = topIds.minOrNull() ?: throw IllegalStateException("상위 카테고리의 id가 존재하지 않습니다.")
+
             // 해당 상위 카테고리들 아래에 속하는 하위 카테고리 조회
             val childCategories = allCategories.filter { it.parentId in topIds }
             // 동일한 이름의 하위 카테고리끼리 합침 (대표 id는 가장 작은 id 사용)
@@ -112,7 +118,7 @@ class ItemCategoryService (
                     name = childName
                 )
             }
-            CategoryResponse(name = topName, children = mergedChildren)
+            CategoryResponse(id = topId, name = topName, children = mergedChildren)
         }
     }
 
@@ -150,6 +156,7 @@ class ItemCategoryService (
 }
 
 data class CategoryResponse(
+    val id: Long,
     val name: String,
     val children: List<SubCategoryResponse>
 )
