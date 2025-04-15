@@ -59,11 +59,13 @@ class OAuthService (
         val requestUrl = "https://oauth2.googleapis.com/token"
 
         val redirectUri = if (isAdmin) googleAdminProperties.redirectUri else googleProperties.redirectUri
+        val clientId = if (isAdmin) googleAdminProperties.clientId else googleProperties.clientId
+        val clientSecret = if (isAdmin) googleProperties.clientSecret else googleProperties.clientSecret
 
         val formData: MultiValueMap<String, String> = LinkedMultiValueMap()
         formData.add("code", request.code)
-        formData.add("client_id", googleProperties.clientId)
-        formData.add("client_secret", googleProperties.clientSecret)
+        formData.add("client_id", clientId)
+        formData.add("client_secret", clientSecret)
         formData.add("redirect_uri", redirectUri)
         formData.add("grant_type", "authorization_code")
 
