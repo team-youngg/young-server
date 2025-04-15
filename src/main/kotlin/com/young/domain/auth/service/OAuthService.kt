@@ -60,7 +60,7 @@ class OAuthService (
 
         val redirectUri = if (isAdmin) googleAdminProperties.redirectUri else googleProperties.redirectUri
         val clientId = if (isAdmin) googleAdminProperties.clientId else googleProperties.clientId
-        val clientSecret = if (isAdmin) googleProperties.clientSecret else googleProperties.clientSecret
+        val clientSecret = if (isAdmin) googleAdminProperties.clientSecret else googleProperties.clientSecret
 
         val formData: MultiValueMap<String, String> = LinkedMultiValueMap()
         formData.add("code", request.code)
