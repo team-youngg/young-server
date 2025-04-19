@@ -6,7 +6,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
   data:
     redis:
       host: ${REDIS_HOST}
@@ -28,6 +28,3 @@ spring:
       max-request-size: 20MB
 toss:
   api_secret: ${TOSS_SECRET_KEY}
-
-server:
-  port: 8082
