@@ -15,7 +15,7 @@ class ReviewController (
 ) {
     @Operation(summary = "리뷰 생성", description = "리뷰를 생성합니다.")
     @PostMapping
-    fun createReview(request: CreateReviewRequest) = reviewService.createReview(request)
+    fun createReview(@RequestBody request: CreateReviewRequest) = reviewService.createReview(request)
 
     @Operation(summary = "리뷰 조회", description = "상품별로 리뷰를 조회합니다.")
     @GetMapping("/{itemId}")
