@@ -28,3 +28,6 @@ spring:
       max-request-size: 20MB
 toss:
   api_secret: ${TOSS_SECRET_KEY}
+
+server:
+  port: 8082
