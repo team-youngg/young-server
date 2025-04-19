@@ -3,6 +3,7 @@ package com.young.domain.info.dto.response
 import com.young.domain.info.domain.entity.UserOrderInfo
 
 data class OrderInfoResponse(
+    val id: Long,
     val isDefault: Boolean,
     val title: String,
     val address: String,
@@ -14,6 +15,7 @@ data class OrderInfoResponse(
     companion object {
         fun of(orderInfo: UserOrderInfo): OrderInfoResponse {
             return OrderInfoResponse(
+                id = orderInfo.id!!,
                 isDefault = orderInfo.isDefault,
                 title = orderInfo.title,
                 address = orderInfo.address,
