@@ -26,7 +26,7 @@ class NoticeController(
     fun getNotice(@PathVariable noticeId: Long) = noticeService.getNotice(noticeId)
 
     @Operation(summary = "공지 수정", description = "공지를 수정합니다.")
-    @PutMapping("/{noticeId}")
+    @PatchMapping("/{noticeId}")
     fun updateNotice(@PathVariable noticeId: Long, @RequestBody request: UpdateNoticeRequest)
     = noticeService.updateNotice(noticeId, request)
 

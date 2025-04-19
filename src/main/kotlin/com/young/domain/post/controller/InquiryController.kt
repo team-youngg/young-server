@@ -28,7 +28,7 @@ class InquiryController(
     fun getInquiry(@PathVariable inquiryId: Long) = inquiryService.getInquiry(inquiryId)
 
     @Operation(summary = "문의 수정", description = "문의를 수정합니다.")
-    @PutMapping("/{inquiryId}")
+    @PatchMapping("/{inquiryId}")
     fun updateInquiry(@PathVariable inquiryId: Long, @RequestBody request: UpdateInquiryRequest)
     = inquiryService.updateInquiry(inquiryId, request)
 
@@ -45,7 +45,7 @@ class InquiryController(
     fun getComments(@PathVariable inquiryId: Long) = inquiryService.getCommentsByInquiry(inquiryId)
 
     @Operation(summary = "문의 답변 수정", description = "문의 답변을 수정합니다.")
-    @PutMapping("/comments/{commentId}")
+    @PatchMapping("/comments/{commentId}")
     fun updateComment(@PathVariable commentId: Long, @RequestBody request: UpdateInquiryCommentRequest)
     = inquiryService.updateComment(commentId, request)
 
