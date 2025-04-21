@@ -9,5 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface ReviewRepository : JpaRepository<Review, Long> {
     fun findAllByItemOption(itemOption: ItemOption): List<Review>
     fun findAllByAuthor(author: User): List<Review>
-    fun findAllByItemOption_Item(item: Item): List<Review>
+    fun findAllByItemOption_ItemOption_Item(item: Item): List<Review>
 }

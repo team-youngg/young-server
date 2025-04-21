@@ -52,7 +52,7 @@ class ReviewService (
         val item = itemRepository.findByIdOrNull(itemId)
             ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
 
-        val reviews = reviewRepository.findAllByItemOption_Item(item)
+        val reviews = reviewRepository.findAllByItemOption_ItemOption_Item(item)
 
         return reviews.map {
             val values = itemOptionValueRepository.findAllByItemOption(it.itemOption.itemOption)
