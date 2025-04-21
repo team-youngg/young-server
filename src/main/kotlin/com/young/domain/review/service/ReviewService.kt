@@ -49,13 +49,14 @@ class ReviewService (
 
     @Transactional(readOnly = true)
     fun getReviews(itemId: Long): List<ReviewResponse> {
-        val item = itemRepository.findByIdOrNull(itemId) ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
-        val itemOptions = itemOptionRepository.findAllByItem(item)
-        val reviews = itemOptions.flatMap { reviewRepository.findAllByItemOption(it) }
+        val item = itemRepository.findByIdOrNull(itemId)
+            ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
+
+        val reviews = reviewRepository.findAllByItemOption_Item(item)
 
         return reviews.map {
-            val itemOptionValues = itemOptionValueRepository.findAllByItemOption(it.itemOption.itemOption)
-            ReviewResponse.of(it, itemOptionValues)
+            val values = itemOptionValueRepository.findAllByItemOption(it.itemOption.itemOption)
+            ReviewResponse.of(it, values)
         }
     }
 
