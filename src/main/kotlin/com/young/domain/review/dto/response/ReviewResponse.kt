@@ -7,6 +7,7 @@ import com.young.domain.user.dto.response.UserResponse
 import java.time.LocalDateTime
 
 data class ReviewResponse(
+    val id: Long,
     val comment: String,
     val star: Float,
     val author: UserResponse,
@@ -17,6 +18,7 @@ data class ReviewResponse(
     companion object {
         fun of(review: Review, itemOptionValues: List<ItemOptionValue>): ReviewResponse {
             return ReviewResponse(
+                id = review.id!!,
                 comment = review.comment,
                 star = review.star,
                 author = UserResponse.of(review.author),
