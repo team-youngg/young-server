@@ -19,12 +19,15 @@ import com.young.domain.order.repository.OrderItemRepository
 import com.young.domain.order.repository.OrderRepository
 import com.young.domain.user.error.UserError
 import com.young.domain.info.repository.UserOrderInfoRepository
+import com.young.domain.order.dto.request.UpdateOrderRequest
+import com.young.domain.order.error.OrderError
 import com.young.global.exception.CustomException
 import com.young.global.security.SecurityHolder
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.util.*
 
 @Service
 class OrderService (
@@ -114,5 +117,13 @@ class OrderService (
             }
             OrderResponse.of(order, orderItemResponses, order.amount!!)
         }
+    }
+
+    @Transactional
+    fun updateOrderStatus(orderId: UUID, request: UpdateOrderRequest) {
+        val order = orderRepository.findByIdOrNull(orderId) ?: throw CustomException(OrderError.ORDER_NOT_FOUND)
+
+        order.status = request.orderStatus
+        orderRepository.save(order)
     }
 }
