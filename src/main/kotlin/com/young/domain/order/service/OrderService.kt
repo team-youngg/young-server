@@ -91,7 +91,10 @@ class OrderService (
     @Transactional
     fun getOrderLogs(pageable: Pageable): List<OrderResponse> {
         val user = securityHolder.user ?: throw CustomException(UserError.USER_NOT_FOUND)
-        val orders = orderRepository.findAllByUser(user, pageable).toList()
+        val excludedStatuses = listOf(OrderStatus.PENDING, OrderStatus.CANCELED)
+        val orders = orderRepository
+            .findAllByUserAndStatusNotInOrderByCreatedAtDesc(user, excludedStatuses, pageable)
+            .toList()
 
         return orders.map { order ->
             val orderItems = orderItemRepository.findByOrder(order)

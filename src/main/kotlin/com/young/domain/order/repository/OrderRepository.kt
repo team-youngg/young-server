@@ -14,4 +14,9 @@ interface OrderRepository : JpaRepository<Order, UUID> {
     fun existsByPayment(payment: Payment): Boolean
     fun findByStatusAndCreatedAtBefore(status: OrderStatus, createdAt: LocalDateTime): List<Order>
     fun findAllByUser(user: User, pageable: Pageable): Page<Order>
+    fun findAllByUserAndStatusNotInOrderByCreatedAtDesc(
+        user: User,
+        excludedStatuses: List<OrderStatus>,
+        pageable: Pageable
+    ): Page<Order>
 }
