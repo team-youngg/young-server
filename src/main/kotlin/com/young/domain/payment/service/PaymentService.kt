@@ -1,6 +1,7 @@
 package com.young.domain.payment.service
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.young.domain.item.error.ItemError
 import com.young.domain.option.repository.ItemOptionRepository
 import com.young.domain.order.domain.enums.OrderStatus
 import com.young.domain.order.error.OrderError
@@ -140,15 +141,22 @@ class PaymentService (
 
     @Transactional
     fun cancelPayment(request: PaymentCancelRequest): PaymentCancelResponse {
-        // 주문 및 결제 검증
         val order = orderRepository.findByIdOrNull(request.orderId)
             ?: throw CustomException(OrderError.ORDER_NOT_FOUND)
 
+        if (order.status == OrderStatus.CHECKED ||
+            order.status == OrderStatus.SHIPPING ||
+            order.status == OrderStatus.COMPLETED) {
+            throw CustomException(PaymentError.ALREADY_CHECKED)
+        }
         if (order.status != OrderStatus.PAID) {
             throw CustomException(PaymentError.PAYMENT_NOT_PAID)
         }
 
-        // TossPayments 결제 취소 API 호출 (paymentKey를 URL에 포함)
+        val cancelItemOption = orderItemOptionRepository.findByIdOrNull(request.itemOptionId)
+            ?: throw CustomException(ItemError.OPTION_NOT_FOUND)
+        val cancelAmount = cancelItemOption.count * cancelItemOption.orderItem.price
+
         val webClient = WebClient.builder()
             .baseUrl("https://api.tosspayments.com/v1")
             .defaultHeader("Authorization", getHeader())
@@ -157,8 +165,7 @@ class PaymentService (
 
         val objectMapper = jacksonObjectMapper()
 
-        // 요청 본문은 취소 사유만 전송합니다.
-        val requestBody = mapOf("cancelReason" to request.cancelReason)
+        val requestBody = mapOf("cancelReason" to request.cancelReason, "cancelAmount" to cancelAmount)
 
         val url = "/payments/${request.paymentKey}/cancel"
         val response: String = webClient.post()
