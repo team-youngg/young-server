@@ -35,7 +35,11 @@ class OrderController (
     fun updateOrderStatus(@PathVariable orderId: UUID, @RequestBody request: UpdateOrderRequest)
     = orderService.updateOrderStatus(orderId, request)
 
-    @Operation(summary = "주문 기록 전체 조회", description = "어드민용 전체 기록 조회")
+    @Operation(summary = "주문 기록 전체 조회", description = "어드민용 전체 기록 조회 *^^*")
     @GetMapping
     fun getAllOrders() = orderService.getAllOrders()
+
+    @Operation(summary = "주문 기록 상세 조회", description = "주문 기록을 상세 조회합니다.")
+    @GetMapping("/{orderId}")
+    fun getOrderById(@PathVariable orderId: UUID) = orderService.getOrderById(orderId)
 }
