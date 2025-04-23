@@ -167,4 +167,26 @@ class OrderService (
         // 4) OrderResponse 생성
         return OrderResponse.of(order, orderItemResponses, order.amount!!)
     }
+
+    fun getAllOrders(): List<OrderResponse> {
+        val orders = orderRepository.findAll()
+        return orders.map { order ->
+            val orderItems = orderItemRepository.findByOrder(order)
+            val orderItemResponses = orderItems.flatMap { orderItem ->
+                val options = orderItemOptionRepository.findByOrderItem(orderItem)
+
+                options.map { option ->
+                    val itemElements = itemUtil.getItemElements(orderItem.item)
+
+                    OrderItemResponse.of(
+                        orderItem,
+                        itemElements.images,
+                        option,
+                        itemElements.optionValues.filter { it.itemOption.id == option.itemOption.id }
+                    )
+                }
+            }
+            OrderResponse.of(order, orderItemResponses, order.amount!!)
+        }
+    }
 }

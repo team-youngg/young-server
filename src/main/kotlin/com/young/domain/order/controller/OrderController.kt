@@ -30,7 +30,12 @@ class OrderController (
     @GetMapping("/my")
     fun getOrders(@PageableDefault pageable: Pageable) = orderService.getOrderLogs(pageable)
 
+    @Operation(summary = "주문 상태 변경", description = "주문 상태를 변경합니다.")
     @PatchMapping("/{orderId}/status")
     fun updateOrderStatus(@PathVariable orderId: UUID, @RequestBody request: UpdateOrderRequest)
     = orderService.updateOrderStatus(orderId, request)
+
+    @Operation(summary = "주문 기록 전체 조회", description = "어드민용 전체 기록 조회")
+    @GetMapping
+    fun getAllOrders() = orderService.getAllOrders()
 }
