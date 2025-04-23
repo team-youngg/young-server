@@ -41,5 +41,5 @@ class OrderController (
 
     @Operation(summary = "주문 기록 상세 조회", description = "주문 기록을 상세 조회합니다.")
     @GetMapping("/{orderId}")
-    fun getOrderById(@PathVariable orderId: UUID) = orderService.getOrderById(orderId)
+    fun getOrderById(@PathVariable orderId: UUID) = orderService.getOrder(orderId)
 }
