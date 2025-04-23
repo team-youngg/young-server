@@ -22,6 +22,6 @@ class PaymentController (
     fun confirmPayment(@RequestBody request: PayRequest) = paymentService.confirmPayment(request)
 
     @Operation(summary = "결제 취소", description = "결제를 취소합니다.")
-    @DeleteMapping("/cancel")
+    @PostMapping("/cancel")
     fun cancelPayment(@RequestBody request: PaymentCancelRequest) = paymentService.cancelPayment(request)
 }
