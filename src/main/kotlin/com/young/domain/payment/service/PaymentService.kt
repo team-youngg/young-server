@@ -13,6 +13,7 @@ import com.young.domain.payment.domain.entity.Payment
 import com.young.domain.payment.dto.request.PayRequest
 import com.young.domain.payment.dto.request.PaymentCancelRequest
 import com.young.domain.payment.dto.response.PaymentCancelResponse
+import com.young.domain.payment.dto.response.PaymentHistoryResponse
 import com.young.domain.payment.dto.response.PaymentResponse
 import com.young.domain.payment.error.PaymentError
 import com.young.domain.payment.repository.PaymentRepository
@@ -196,5 +197,12 @@ class PaymentService (
         orderRepository.save(order)
 
         return cancelResponse
+    }
+
+    @Transactional(readOnly = true)
+    fun getPaymentByOrderId(orderId: UUID): PaymentHistoryResponse {
+        val payment = paymentRepository.findByOrderId(orderId.toString())
+            ?: throw CustomException(OrderError.ORDER_NOT_FOUND)
+        return PaymentHistoryResponse.of(payment)
     }
 }
