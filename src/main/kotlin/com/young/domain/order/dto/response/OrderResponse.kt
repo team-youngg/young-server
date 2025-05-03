@@ -1,5 +1,6 @@
 package com.young.domain.order.dto.response
 
+import com.young.domain.info.dto.response.OrderInfoResponse
 import com.young.domain.order.domain.entity.Order
 import com.young.domain.order.domain.enums.OrderStatus
 import java.time.LocalDateTime
@@ -11,6 +12,7 @@ data class OrderResponse(
     val amount: Long,
     val items: List<OrderItemResponse>,
     val status: OrderStatus,
+    val orderInfo: OrderInfoResponse,
 ) {
     companion object {
         fun of(order: Order, items: List<OrderItemResponse>, amount: Long): OrderResponse {
@@ -20,6 +22,7 @@ data class OrderResponse(
                 amount = amount,
                 items = items,
                 status = order.status,
+                orderInfo = OrderInfoResponse.of(order.orderInfo)
             )
         }
     }
