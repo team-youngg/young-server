@@ -1,12 +1,11 @@
 package com.young.domain.item.service
 
-import com.young.domain.category.domain.entity.Category
 import com.young.domain.category.domain.entity.ItemCategory
 import com.young.domain.category.repository.CategoryRepository
 import com.young.domain.category.repository.ItemCategoryRepository
 import com.young.domain.image.domain.entity.ItemImage
 import com.young.domain.image.repository.ItemImageRepository
-import com.young.domain.item.domain.entity.*
+import com.young.domain.item.domain.entity.Item
 import com.young.domain.item.dto.request.CreateItemRequest
 import com.young.domain.item.dto.request.UpdateItemRequest
 import com.young.domain.item.dto.request.UpdateStockRequest
@@ -14,7 +13,7 @@ import com.young.domain.item.dto.response.ItemDetailResponse
 import com.young.domain.item.dto.response.ItemResponse
 import com.young.domain.item.dto.response.StockResponse
 import com.young.domain.item.error.ItemError
-import com.young.domain.item.repository.*
+import com.young.domain.item.repository.ItemRepository
 import com.young.domain.item.util.ItemUtil
 import com.young.domain.option.domain.entity.ItemOption
 import com.young.domain.option.domain.entity.ItemOptionValue
@@ -25,12 +24,10 @@ import com.young.global.common.PageResponse
 import com.young.global.exception.CustomException
 import com.young.global.security.SecurityHolder
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
 
 @Service
 class ItemService (
