@@ -27,6 +27,8 @@ class ImageService (
 
         return ImageResponse(
             ServletUriComponentsBuilder.fromCurrentContextPath()
+                .scheme("https")
+                .host("youngg.store")
                 .path("/uploads/")
                 .path(filename)
                 .toUriString()
