@@ -25,13 +25,6 @@ class ImageService (
         val targetFile = File(directory, filename)
         file.transferTo(targetFile)
 
-        return ImageResponse(
-            ServletUriComponentsBuilder.fromCurrentContextPath()
-                .scheme("https")
-                .host("youngg.store")
-                .path("/uploads/")
-                .path(filename)
-                .toUriString()
-        )
+        return ImageResponse("https://youngg.store/uploads/${filename}")
     }
 }
