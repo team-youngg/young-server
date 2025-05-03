@@ -135,8 +135,6 @@ class ItemService (
         item.price = request.price ?: item.price
         item.detail = request.detail ?: item.detail
 
-        // TODO category 랑 이미지 수정도 만들기
-
         itemRepository.save(item)
     }
 

@@ -40,7 +40,6 @@ class CartService (
 ) {
     @Transactional
     fun createCartItem(request: CreateCartRequest) {
-        // TODO 이미 있는 아이템 && 옵션이면 재고추가
         val user = securityHolder.user ?: throw CustomException(UserError.USER_NOT_FOUND)
         val cart = cartRepository.findByUser(user) ?: throw CustomException(CartError.CART_NOT_FOUND)
         val itemOption = itemOptionRepository.findByIdOrNull(request.optionId)
