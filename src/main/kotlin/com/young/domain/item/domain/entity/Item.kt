@@ -12,7 +12,8 @@ class Item (
     @Column(nullable = false)
     var name: String,
 
-    @Column(nullable = false)
+    @Lob
+    @Column(columnDefinition = "TEXT", nullable = false)
     var description: String,
 
     @Column(nullable = false)
