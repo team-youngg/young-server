@@ -8,4 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface CartItemOptionRepository : JpaRepository<CartItemOption, Long> {
     fun findByCartItem(cartItem: CartItem): List<CartItemOption>
     fun existsByItemOption(itemOption: ItemOption): Boolean
+    fun findByItemOption(itemOption: ItemOption): CartItemOption?
 }

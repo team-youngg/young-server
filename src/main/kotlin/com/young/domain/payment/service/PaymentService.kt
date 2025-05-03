@@ -1,6 +1,8 @@
 package com.young.domain.payment.service
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.young.domain.cart.error.CartError
+import com.young.domain.cart.repository.CartItemOptionRepository
 import com.young.domain.item.error.ItemError
 import com.young.domain.option.repository.ItemOptionRepository
 import com.young.domain.order.domain.enums.OrderStatus
@@ -38,7 +40,8 @@ class PaymentService (
     private val orderRepository: OrderRepository,
     private val itemOptionRepository: ItemOptionRepository,
     private val orderItemOptionRepository: OrderItemOptionRepository,
-    private val orderItemRepository: OrderItemRepository
+    private val orderItemRepository: OrderItemRepository,
+    private val cartItemOptionRepository: CartItemOptionRepository,
 ) {
     @Transactional
     fun getHeader(): String {
@@ -120,6 +123,11 @@ class PaymentService (
                 for (orderOption in orderItemOptions) {
                     orderOption.itemOption.stock -= orderOption.count
                     itemOptionRepository.save(orderOption.itemOption)
+
+                    // 주문 완료 후 장바구니에서 상품 삭제
+                    val cartItemOption = cartItemOptionRepository.findByItemOption(orderOption.itemOption)
+                        ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
+                    cartItemOptionRepository.delete(cartItemOption)
                 }
             }
         }
