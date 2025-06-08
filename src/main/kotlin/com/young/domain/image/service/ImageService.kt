@@ -24,6 +24,6 @@ class ImageService (
         val targetFile = File(directory, filename)
         file.transferTo(targetFile)
 
-        return ImageResponse("https://api.ylab.store/uploads/${filename}")
+        return ImageResponse("https://api.ylabpoint.store/uploads/${filename}")
     }
 }
