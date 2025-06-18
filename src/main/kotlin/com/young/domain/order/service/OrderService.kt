@@ -127,6 +127,9 @@ class OrderService (
         val order = orderRepository.findByIdOrNull(orderId) ?: throw CustomException(OrderError.ORDER_NOT_FOUND)
 
         order.status = request.orderStatus
+        if (order.status == OrderStatus.SHIPPING && request.invoice != null) {
+            order.invoice = request.invoice
+        }
         orderRepository.save(order)
     }
 

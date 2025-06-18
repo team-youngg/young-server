@@ -34,4 +34,7 @@ class Order (
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "payment_id", nullable = true)
     var payment: Payment? = null,
+
+    @Column(nullable = true)
+    var invoice: String? = null,
 ) : BaseEntity()

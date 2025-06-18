@@ -4,4 +4,5 @@ import com.young.domain.order.domain.enums.OrderStatus
 
 data class UpdateOrderRequest(
     val orderStatus: OrderStatus,
+    val invoice: String? = null
 )
