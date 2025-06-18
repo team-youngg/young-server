@@ -27,7 +27,7 @@ class DummyInitializer(
     private val itemOptionValueRepository: ItemOptionValueRepository
 ) {
 
-    @PostConstruct
+//    @PostConstruct
     @Transactional
     fun init() {
         // 이미 카테고리가 존재하면 더미 데이터 생성하지 않음
