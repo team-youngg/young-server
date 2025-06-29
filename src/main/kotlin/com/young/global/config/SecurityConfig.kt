@@ -51,7 +51,7 @@ class SecurityConfig(
                 .requestMatchers(HttpMethod.POST, "/auth/sign-in", "/auth/sign-up", "/auth/reissue").anonymous()
                 .requestMatchers(HttpMethod.GET, "/users/me").authenticated()
                 .requestMatchers("/uploads/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/oauth/google/admin").hasRole("ROLE_ADMIN")
+                .requestMatchers(HttpMethod.POST, "/oauth/google/admin").hasRole("ADMIN")
                 .anyRequest().permitAll()
         }
 
