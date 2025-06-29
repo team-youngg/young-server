@@ -22,5 +22,4 @@ class OAuthController (
     @Operation(summary = "관리자 구글 로그인", description = "관리자 구글 로그인 합니다.")
     @PostMapping("/google/admin")
     fun loginAdmin(@RequestBody request: GoogleLoginRequest) = oAuthService.login(request,true)
-
 }
