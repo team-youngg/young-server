@@ -45,7 +45,8 @@ class CartService (
         val itemOption = itemOptionRepository.findByIdOrNull(request.optionId)
             ?: throw CustomException(ItemError.OPTION_NOT_FOUND)
         if (itemOption.stock == 0L) throw CustomException(ItemError.NO_STOCK)
-        if (cartItemOptionRepository.existsByItemOption(itemOption)) throw CustomException(CartError.CART_ITEM_DUPLICATED)
+        if (cartItemOptionRepository.existsByItemOptionAndCartItem_Cart(itemOption, cart))
+            throw CustomException(CartError.CART_ITEM_DUPLICATED)
 
         val cartItem = CartItem(
             cart = cart,
@@ -101,7 +102,6 @@ class CartService (
         val user = securityHolder.user ?: throw CustomException(UserError.USER_NOT_FOUND)
         val cart = cartRepository.findByUser(user) ?: throw CustomException(CartError.CART_NOT_FOUND)
         val cartItemsPage = cartItemRepository.findAllByCart(cart, pageable)
-        print(cartItemsPage.content)
 
         val cartItemResponses = cartItemsPage.content.flatMap { cartItem ->
             cartItemOptionRepository.findByCartItem(cartItem).map { cartItemOption ->
