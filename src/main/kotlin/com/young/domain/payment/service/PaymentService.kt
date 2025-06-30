@@ -114,7 +114,6 @@ class PaymentService (
         return response
     }
 
-    @Transactional
     fun cancelOrder(orderId: UUID) {
         val order = orderRepository.findByIdOrNull(orderId) ?: return
         val orderItems = orderItemRepository.findByOrder(order)
@@ -125,70 +124,6 @@ class PaymentService (
         }
         orderItemRepository.deleteAll(orderItems)
 
-        order.status = OrderStatus.CANCELED
-        orderRepository.save(order)
-    }
-
-    fun cancelPayment(request: PaymentCancelRequest): PaymentCancelResponse {
-        val (order, cancelAmount) = getCancelAmount(request)
-        val response = fetchCancelPayment(request, cancelAmount)
-
-        updateOrderStatusCancel(order)
-        return response
-    }
-
-    fun getCancelAmount(request: PaymentCancelRequest): Pair<Order, Long> {
-        val order = orderRepository.findByIdOrNull(request.orderId)
-            ?: throw CustomException(OrderError.ORDER_NOT_FOUND)
-
-        if (order.status == OrderStatus.CHECKED ||
-            order.status == OrderStatus.SHIPPING ||
-            order.status == OrderStatus.COMPLETED) {
-            throw CustomException(PaymentError.ALREADY_CHECKED)
-        }
-        if (order.status != OrderStatus.PAID) {
-            throw CustomException(PaymentError.PAYMENT_NOT_PAID)
-        }
-
-        val cancelItemOption = orderItemOptionRepository.findByIdOrNull(request.itemOptionId)
-            ?: throw CustomException(ItemError.OPTION_NOT_FOUND)
-        val cancelAmount = cancelItemOption.count * cancelItemOption.orderItem.price
-        return order to cancelAmount
-    }
-
-    fun fetchCancelPayment(request: PaymentCancelRequest, cancelAmount: Long): PaymentCancelResponse {
-        val objectMapper = jacksonObjectMapper()
-
-        val requestBody = mapOf("cancelReason" to request.cancelReason, "cancelAmount" to cancelAmount)
-
-        val url = "/payments/${request.paymentKey}/cancel"
-        val response: String = tossClient.post()
-            .uri(url)
-            .bodyValue(requestBody)
-            .retrieve()
-            .onStatus({ it.isError }) { res ->
-                res.bodyToMono(String::class.java).flatMap {
-                    Mono.error(CustomException(PaymentError.API_ERROR, it))
-                }
-            }
-            .bodyToMono(String::class.java)
-            .block() ?: throw CustomException(PaymentError.API_ERROR, "No response")
-
-        println("🔎 Toss API 취소 응답 데이터: $response")
-
-        val cancelResponse = objectMapper.readValue(response, PaymentCancelResponse::class.java)
-
-        if (cancelResponse.status != "CANCELED") {
-            throw CustomException(
-                PaymentError.PAYMENT_CANCELLATION_FAILED,
-                cancelResponse.failure?.message ?: "취소 실패"
-            )
-        }
-        return cancelResponse
-    }
-
-    @Transactional
-    fun updateOrderStatusCancel(order: Order) {
         order.status = OrderStatus.CANCELED
         orderRepository.save(order)
     }

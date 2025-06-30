@@ -6,5 +6,5 @@ data class PaymentCancelRequest(
     val orderId: UUID,
     val paymentKey: String,
     val cancelReason: String, // 취소 사유
-    val itemOptionId: Long
+    val itemOptionIds: List<Long>? = null
 )

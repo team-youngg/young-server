@@ -11,4 +11,5 @@ enum class PaymentError(override val status: Int, override val message: String) 
     PAYMENT_CANCELLATION_FAILED(500, "결제 취소에 실패하였습니다."),
     PAYMENT_NOT_PAID(400, "완료하지 않은 결제는 취소할 수 없습니다."),
     ALREADY_CHECKED(400, "이미 확인된 주문은 취소할 수 없습니다."),
+    PAYMENT_EXPIRED(400, "결제 후 15일이 지나 환불이 불가합니다.")
 }
