@@ -26,6 +26,7 @@ class PaymentCancelingService (
     private val orderItemOptionRepository: OrderItemOptionRepository,
     private val tossClient: WebClient
 ) {
+    @Transactional
     fun cancelPayment(request: PaymentCancelRequest): PaymentCancelResponse {
         val context = buildCancelContext(request)
         val apiResult = fetchTossCancel(request, context.amount)

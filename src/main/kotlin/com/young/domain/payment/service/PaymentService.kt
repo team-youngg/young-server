@@ -41,6 +41,7 @@ class PaymentService (
     private val cartItemOptionRepository: CartItemOptionRepository,
     private val tossClient: WebClient
 ) {
+    @Transactional
     fun confirmPayment(request: PayRequest) : PaymentResponse {
         val order = orderRepository.findByIdOrNull(request.orderId)
             ?: throw CustomException(OrderError.ORDER_NOT_FOUND)
