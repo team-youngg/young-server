@@ -1,16 +1,15 @@
 package com.young.domain.payment.service
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.young.domain.cart.error.CartError
 import com.young.domain.cart.repository.CartItemOptionRepository
 import com.young.domain.item.error.ItemError
 import com.young.domain.option.repository.ItemOptionRepository
+import com.young.domain.order.domain.entity.Order
 import com.young.domain.order.domain.enums.OrderStatus
 import com.young.domain.order.error.OrderError
 import com.young.domain.order.repository.OrderItemOptionRepository
 import com.young.domain.order.repository.OrderItemRepository
 import com.young.domain.order.repository.OrderRepository
-import com.young.domain.payment.config.paymentProperties
 import com.young.domain.payment.domain.entity.Payment
 import com.young.domain.payment.dto.request.PayRequest
 import com.young.domain.payment.dto.request.PaymentCancelRequest
@@ -23,18 +22,16 @@ import com.young.domain.user.error.UserError
 import com.young.global.exception.CustomException
 import com.young.global.security.SecurityHolder
 import org.springframework.data.repository.findByIdOrNull
-import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
-import java.nio.charset.StandardCharsets
+import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.util.*
 
 @Service
 class PaymentService (
-    private val paymentProperties: paymentProperties,
     private val securityHolder: SecurityHolder,
     private val paymentRepository: PaymentRepository,
     private val orderRepository: OrderRepository,
@@ -42,15 +39,8 @@ class PaymentService (
     private val orderItemOptionRepository: OrderItemOptionRepository,
     private val orderItemRepository: OrderItemRepository,
     private val cartItemOptionRepository: CartItemOptionRepository,
+    private val tossClient: WebClient
 ) {
-    @Transactional
-    fun getHeader(): String {
-        val authorizations = "Basic " + Base64.getEncoder()
-            .encodeToString("${paymentProperties.apiSecret}:".toByteArray(StandardCharsets.UTF_8))
-        return authorizations
-    }
-
-    @Transactional
     fun confirmPayment(request: PayRequest) : PaymentResponse {
         val order = orderRepository.findByIdOrNull(request.orderId)
             ?: throw CustomException(OrderError.ORDER_NOT_FOUND)
@@ -59,15 +49,9 @@ class PaymentService (
             throw CustomException(PaymentError.ALREADY_PAID)
         }
 
-        val webClient = WebClient.builder()
-            .baseUrl("https://api.tosspayments.com/v1")
-            .defaultHeader("Authorization", getHeader())
-            .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .build()
-
         val objectMapper = jacksonObjectMapper()
 
-        val response: String = webClient.post()
+        val response: String = tossClient.post()
             .uri("/payments/confirm")
             .bodyValue(request)
             .retrieve()
@@ -79,8 +63,6 @@ class PaymentService (
             .bodyToMono(String::class.java)
             .block() ?: throw CustomException(PaymentError.API_ERROR, "No response")
 
-        println("🔎 Toss API 응답 데이터: $response")
-
         val paymentResponse = objectMapper.readValue(response, PaymentResponse::class.java)
 
         if (paymentResponse.status != "DONE") {
@@ -88,49 +70,48 @@ class PaymentService (
             throw CustomException(PaymentError.PAYMENT_FAILED, paymentResponse.failure?.message.toString())
         }
 
-        val user = securityHolder.user ?: throw CustomException(UserError.USER_NOT_FOUND)
-
-        val payment = Payment(
-            orderId = paymentResponse.orderId,
-            paymentKey = paymentResponse.paymentKey,
-            totalPrice = paymentResponse.totalAmount,
-            payMethod = paymentResponse.method ?: "UNKNOWN",
-            paidAt = OffsetDateTime.parse(paymentResponse.approvedAt!!).toLocalDateTime(),
-            bankCode = paymentResponse.easyPay?.provider ?: "N/A",
-            bankName = paymentResponse.easyPay?.provider ?: "N/A",
-            isPaid = paymentResponse?.status == "DONE",
-            user = user
-        )
-
-        paymentRepository.save(payment)
-        updateOrderStatus(request.orderId, payment)
-
-        return paymentResponse
+        return savePayment(paymentResponse, order)
     }
 
     @Transactional
-    fun updateOrderStatus(orderId: UUID, payment: Payment) {
-        val order = orderRepository.findByIdOrNull(orderId)
+    fun savePayment(response: PaymentResponse, order: Order): PaymentResponse {
+        val user = securityHolder.user ?: throw CustomException(UserError.USER_NOT_FOUND)
 
-        if (order != null) {
-            order.payment = payment
-            order.status = OrderStatus.PAID
-            orderRepository.save(order)
+        val payment = Payment(
+            orderId = response.orderId,
+            paymentKey = response.paymentKey,
+            totalPrice = response.totalAmount,
+            payMethod = response.method ?: "UNKNOWN",
+            paidAt = response.approvedAt
+                ?.let { OffsetDateTime.parse(it).toLocalDateTime() }
+                ?: LocalDateTime.now(),
+            bankCode = response.easyPay?.provider ?: "N/A",
+            bankName = response.easyPay?.provider ?: "N/A",
+            isPaid = true,
+            user = user
+        )
+        paymentRepository.save(payment)
 
-            val orderItems = orderItemRepository.findByOrder(order)
-            for (orderItem in orderItems) {
-                val orderItemOptions = orderItemOptionRepository.findByOrderItem(orderItem)
-                for (orderOption in orderItemOptions) {
-                    orderOption.itemOption.stock -= orderOption.count
-                    itemOptionRepository.save(orderOption.itemOption)
+        order.apply {
+            status = OrderStatus.PAID
+            this.payment = payment
+        }
+        orderRepository.save(order)
 
-                    // 주문 완료 후 장바구니에서 상품 삭제
-                    val cartItemOption = cartItemOptionRepository.findByItemOption(orderOption.itemOption)
-                        ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
-                    cartItemOptionRepository.delete(cartItemOption)
-                }
+        orderItemRepository.findByOrder(order).forEach { orderItem ->
+            orderItemOptionRepository.findByOrderItem(orderItem).forEach { orderItemOption ->
+                val updatedRows = itemOptionRepository.decreaseStock(
+                    orderItemOption.itemOption.id!!, orderItemOption.count
+                )
+                if (updatedRows == 0) throw CustomException(ItemError.NO_STOCK)
+
+                val cartItemOption = cartItemOptionRepository
+                    .findByItemOptionAndCartItem_Cart_User(orderItemOption.itemOption, user)
+                cartItemOption?.let { cartItemOptionRepository.delete(it) }
             }
         }
+
+        return response
     }
 
     @Transactional
@@ -148,8 +129,15 @@ class PaymentService (
         orderRepository.save(order)
     }
 
-    @Transactional
     fun cancelPayment(request: PaymentCancelRequest): PaymentCancelResponse {
+        val (order, cancelAmount) = getCancelAmount(request)
+        val response = fetchCancelPayment(request, cancelAmount)
+
+        updateOrderStatusCancel(order)
+        return response
+    }
+
+    fun getCancelAmount(request: PaymentCancelRequest): Pair<Order, Long> {
         val order = orderRepository.findByIdOrNull(request.orderId)
             ?: throw CustomException(OrderError.ORDER_NOT_FOUND)
 
@@ -165,19 +153,16 @@ class PaymentService (
         val cancelItemOption = orderItemOptionRepository.findByIdOrNull(request.itemOptionId)
             ?: throw CustomException(ItemError.OPTION_NOT_FOUND)
         val cancelAmount = cancelItemOption.count * cancelItemOption.orderItem.price
+        return order to cancelAmount
+    }
 
-        val webClient = WebClient.builder()
-            .baseUrl("https://api.tosspayments.com/v1")
-            .defaultHeader("Authorization", getHeader())
-            .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-            .build()
-
+    fun fetchCancelPayment(request: PaymentCancelRequest, cancelAmount: Long): PaymentCancelResponse {
         val objectMapper = jacksonObjectMapper()
 
         val requestBody = mapOf("cancelReason" to request.cancelReason, "cancelAmount" to cancelAmount)
 
         val url = "/payments/${request.paymentKey}/cancel"
-        val response: String = webClient.post()
+        val response: String = tossClient.post()
             .uri(url)
             .bodyValue(requestBody)
             .retrieve()
@@ -199,12 +184,13 @@ class PaymentService (
                 cancelResponse.failure?.message ?: "취소 실패"
             )
         }
+        return cancelResponse
+    }
 
-        // 주문 상태 업데이트 (취소)
+    @Transactional
+    fun updateOrderStatusCancel(order: Order) {
         order.status = OrderStatus.CANCELED
         orderRepository.save(order)
-
-        return cancelResponse
     }
 
     @Transactional(readOnly = true)

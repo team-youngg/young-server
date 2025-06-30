@@ -16,4 +16,7 @@ class ItemOption (
 
     @Column(nullable = false)
     var stock: Long,
+
+    @Version
+    var version: Long? = null
 ) : BaseEntity()
