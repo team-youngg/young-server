@@ -73,9 +73,12 @@ data class Receipt(
     val url: String // 결제 영수증 URL
 )
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class PaymentCancelResponse(
     val status: String,        // 취소 결과 상태 (예: "CANCELED")
     val canceledAt: String?,   // 취소 완료 일시
     val cancelAmount: Long?,   // 취소 금액
-    val failure: Failure?      // 취소 실패 시 에러 정보
+    val failure: Failure?,     // 취소 실패 시 에러 정보
+    @JsonProperty("mId")       // Toss 응답 필드
+    val mid: String? = null
 )
