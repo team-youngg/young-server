@@ -114,6 +114,7 @@ class PaymentService (
         return response
     }
 
+    @Transactional
     fun cancelOrder(orderId: UUID) {
         val order = orderRepository.findByIdOrNull(orderId) ?: return
         val orderItems = orderItemRepository.findByOrder(order)
