@@ -52,6 +52,32 @@ class SecurityConfig(
                 .requestMatchers(HttpMethod.GET, "/users/me").authenticated()
                 .requestMatchers("/uploads/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/orders").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/items/category").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PATCH, "/items/category").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/items/category").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/items/category/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PATCH, "/items/category/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/items/category/**").hasRole("ADMIN")
+
+                .requestMatchers(HttpMethod.PUT, "/banner/**").hasRole("ADMIN")
+
+                .requestMatchers(HttpMethod.POST, "/items/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PATCH, "/items/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/items/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/items").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PATCH, "/items").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/items").hasRole("ADMIN")
+
+                .requestMatchers(HttpMethod.PATCH, "/orders/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.GET, "/orders").hasRole("ADMIN")
+
+                .requestMatchers(HttpMethod.POST, "/notices").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PATCH, "/notices").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/notices").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/notices/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PATCH, "/notices/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/notices/**").hasRole("ADMIN")
+
                 .anyRequest().permitAll()
         }
 
