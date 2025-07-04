@@ -18,7 +18,7 @@ spring:
     access-exp: 360000000
     refresh-exp: 8640000
   profiles:
-    include: oauth
+    include: oauth, aws
   upload:
     dir: ${UPLOAD_DIR}
   servlet:
