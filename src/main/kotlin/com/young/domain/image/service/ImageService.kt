@@ -1,5 +1,7 @@
 package com.young.domain.image.service
 
+import com.amazonaws.services.s3.AmazonS3
+import com.amazonaws.services.s3.model.ObjectMetadata
 import com.young.domain.image.dto.request.UpdateBannerRequest
 import com.young.domain.image.dto.response.ImageResponse
 import com.young.domain.image.error.ImageError
@@ -10,27 +12,25 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
-import java.io.File
 import java.util.*
 
 @Service
-class ImageService (
-    @Value("\${spring.upload.dir}") private val uploadDir: String,
+class ImageService(
+    private val amazonS3: AmazonS3,
+    @Value("\${cloud.aws.s3.bucket}") private val bucket: String,
     private val bannerImageRepository: BannerImageRepository
 ) {
     @Transactional
-    fun uploadImage(file: MultipartFile) : ImageResponse {
+    fun uploadImage(file: MultipartFile): ImageResponse {
         val filename = "${UUID.randomUUID()}-${file.originalFilename}"
 
-        val directory = File(uploadDir)
-        if (!directory.exists()) {
-            directory.mkdirs()
-        }
+        val metadata = ObjectMetadata()
+        metadata.contentType = file.contentType
+        metadata.contentLength = file.size
 
-        val targetFile = File(directory, filename)
-        file.transferTo(targetFile)
+        amazonS3.putObject(bucket, filename, file.inputStream, metadata)
 
-        return ImageResponse("https://api.ylabpoint.store/uploads/${filename}")
+        return ImageResponse(amazonS3.getUrl(bucket, filename).toString())
     }
 
     @Transactional
