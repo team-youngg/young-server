@@ -73,6 +73,8 @@ class OrderService (
         val item = itemRepository.findByIdOrNull(itemOption.item.id)
             ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
 
+        if (!item.purchasable) throw CustomException(ItemError.ITEM_NOT_FOUND) // 구매 불가 상품은 주문할 수 없음
+
         if (itemOption.stock < request.count) {
             throw CustomException(ItemError.NO_STOCK)
         }

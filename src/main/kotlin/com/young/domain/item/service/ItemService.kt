@@ -100,9 +100,11 @@ class ItemService (
         return StockResponse(itemOption.stock)
     }
 
+    @Transactional(readOnly = true)
     fun getItem(id: Long): ItemDetailResponse {
         val user = securityHolder.user
         val item = itemRepository.findByIdOrNull(id) ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
+        if (!item.purchasable) throw CustomException(ItemError.ITEM_NOT_FOUND) // 구매 불가 상품은 찾을 수 없는 것으로 처리
         val itemElements = itemUtil.getItemElements(item)
         val wishItemIds: Set<Long> = if (user != null) {
             wishRepository.findItemIdsByUser(user).toSet()
@@ -119,10 +121,10 @@ class ItemService (
         )
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     fun getItems(pageable: Pageable): PageResponse<List<ItemResponse>> {
         val user = securityHolder.user
-        val items = itemRepository.findAllByOrderByCreatedAtDesc(pageable)
+        val items = itemRepository.findAllByPurchasableIsTrueOrderByCreatedAtDesc(pageable)
             .map { itemUtil.toItemResponse(it, user) }
 
         return PageResponse.of(items)
@@ -147,22 +149,7 @@ class ItemService (
     @Transactional
     fun deleteItem(itemId: Long) {
         val item = itemRepository.findByIdOrNull(itemId) ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
-
-        val options = itemOptionRepository.findAllByItem(item)
-        options.forEach { option ->
-            if (cartItemOptionRepository.existsByItemOption(option)) {
-                throw CustomException(ItemError.ITEM_IN_CART)
-            }
-        }
-
-        itemImageRepository.deleteAllByItem(item)
-        itemCategoryRepository.deleteAllByItem(item)
-
-        options.forEach { option ->
-            itemOptionValueRepository.deleteAllByItemOption(option)
-        }
-        itemOptionRepository.deleteAllByItem(item)
-
-        itemRepository.delete(item)
+        item.purchasable = false
+        itemRepository.save(item)
     }
 }

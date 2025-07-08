@@ -44,6 +44,7 @@ class CartService (
         val cart = cartRepository.findByUser(user) ?: throw CustomException(CartError.CART_NOT_FOUND)
         val itemOption = itemOptionRepository.findByIdOrNull(request.optionId)
             ?: throw CustomException(ItemError.OPTION_NOT_FOUND)
+        if (!itemOption.item.purchasable) throw CustomException(ItemError.ITEM_NOT_FOUND) // 구매 불가 상품은 담을 수 없음
         if (itemOption.stock == 0L) throw CustomException(ItemError.NO_STOCK)
         if (cartItemOptionRepository.existsByItemOptionAndCartItem_Cart(itemOption, cart))
             throw CustomException(CartError.CART_ITEM_DUPLICATED)

@@ -21,5 +21,7 @@ class Item (
 
     var detail: String,
 
-    var gender: String
+    var gender: String,
+
+    var purchasable: Boolean = true
 ) : BaseEntity()

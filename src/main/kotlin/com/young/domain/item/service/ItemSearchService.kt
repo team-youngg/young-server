@@ -27,7 +27,7 @@ class ItemSearchService (
     fun searchItems(query: String, pageable: Pageable): PageResponse<List<ItemResponse>> {
         val user = securityHolder.user
         val items = itemRepository
-            .findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(query, query, pageable)
+            .findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCaseAndPurchasableIsTrue(query, query, pageable)
             .map { itemUtil.toItemResponse(it, user) }
         return PageResponse.of(items)
     }

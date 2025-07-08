@@ -24,6 +24,7 @@ class WishService (
     @Transactional
     fun updateWishItem(request: WishRequest) {
         val item = itemRepository.findByIdOrNull(request.itemId) ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
+        if (!item.purchasable) throw CustomException(ItemError.ITEM_NOT_FOUND) // 구매 불가 상품은 찜할 수 없음
         val user = securityHolder.user ?: throw CustomException(UserError.USER_NOT_FOUND)
         val wish = wishRepository.findByUserAndItem(user, item)
 

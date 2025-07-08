@@ -11,5 +11,7 @@ enum class ItemError(override val status: Int, override val message: String) : C
     STOCK_UNDER_ZERO(400, "재고가 0 이하입니다."),
     CATEGORY_NOT_MATCH(400, "해당 아이템의 카테고리가 아닙니다."),
     CATEGORY_REFERENCED(400, "참조하는 상품이 있어 삭제할 수 없습니다."),
-    ITEM_IN_CART(400, "장바구니에 담긴 상품이 있어 삭제할 수 없습니다.")
+    ITEM_IN_CART(400, "장바구니에 담긴 상품이 있어 삭제할 수 없습니다."),
+    ITEM_IN_WISH(400, "찜 목록에 담긴 상품이 있어 삭제할 수 없습니다."),
+    ITEM_IN_ORDER(400, "주문 내역에 존재하는 상품이 있어 삭제할 수 없습니다.")
 }

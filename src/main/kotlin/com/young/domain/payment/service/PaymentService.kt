@@ -12,8 +12,6 @@ import com.young.domain.order.repository.OrderItemRepository
 import com.young.domain.order.repository.OrderRepository
 import com.young.domain.payment.domain.entity.Payment
 import com.young.domain.payment.dto.request.PayRequest
-import com.young.domain.payment.dto.request.PaymentCancelRequest
-import com.young.domain.payment.dto.response.PaymentCancelResponse
 import com.young.domain.payment.dto.response.PaymentHistoryResponse
 import com.young.domain.payment.dto.response.PaymentResponse
 import com.young.domain.payment.error.PaymentError
