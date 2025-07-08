@@ -18,4 +18,5 @@ interface ItemOptionRepository : JpaRepository<ItemOption, Long> {
            AND io.stock >= :cnt
     """)
     fun decreaseStock(id: Long, cnt: Long): Int
+    fun deleteAllByItem(item: Item)
 }

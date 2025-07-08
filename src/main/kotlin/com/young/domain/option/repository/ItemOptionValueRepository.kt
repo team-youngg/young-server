@@ -8,4 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface ItemOptionValueRepository : JpaRepository<ItemOptionValue, Long> {
     fun findAllByItemOption(option: ItemOption): List<ItemOptionValue>
     fun findByTypeAndValue(type: ItemOptionType, value: String): ItemOptionValue?
+    fun deleteAllByItemOption(option: ItemOption)
 }

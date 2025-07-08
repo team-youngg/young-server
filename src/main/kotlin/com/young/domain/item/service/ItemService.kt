@@ -1,5 +1,6 @@
 package com.young.domain.item.service
 
+import com.young.domain.cart.repository.CartItemOptionRepository
 import com.young.domain.category.domain.entity.ItemCategory
 import com.young.domain.category.repository.CategoryRepository
 import com.young.domain.category.repository.ItemCategoryRepository
@@ -38,6 +39,7 @@ class ItemService (
     private val categoryRepository: CategoryRepository,
     private val itemCategoryRepository: ItemCategoryRepository,
     private val itemOptionValueRepository: ItemOptionValueRepository,
+    private val cartItemOptionRepository: CartItemOptionRepository,
     private val itemUtil: ItemUtil,
     private val securityHolder: SecurityHolder,
     private val wishRepository: WishRepository
@@ -145,6 +147,22 @@ class ItemService (
     @Transactional
     fun deleteItem(itemId: Long) {
         val item = itemRepository.findByIdOrNull(itemId) ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
+
+        val options = itemOptionRepository.findAllByItem(item)
+        options.forEach { option ->
+            if (cartItemOptionRepository.existsByItemOption(option)) {
+                throw CustomException(ItemError.ITEM_IN_CART)
+            }
+        }
+
+        itemImageRepository.deleteAllByItem(item)
+        itemCategoryRepository.deleteAllByItem(item)
+
+        options.forEach { option ->
+            itemOptionValueRepository.deleteAllByItemOption(option)
+        }
+        itemOptionRepository.deleteAllByItem(item)
+
         itemRepository.delete(item)
     }
 }

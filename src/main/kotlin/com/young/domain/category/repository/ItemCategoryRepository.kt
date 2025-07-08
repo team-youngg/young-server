@@ -52,4 +52,5 @@ interface ItemCategoryRepository : JpaRepository<ItemCategory, Long> {
     ): Page<ItemCategory>
 
     fun countByCategoryId(categoryId: Long): Long
+    fun deleteAllByItem(item: Item)
 }
