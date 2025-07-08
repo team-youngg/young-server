@@ -9,7 +9,7 @@ class ItemImage (
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null,
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     val url: String,
 
     @ManyToOne(fetch = FetchType.LAZY)
