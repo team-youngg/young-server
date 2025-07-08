@@ -104,7 +104,6 @@ class ItemService (
     fun getItem(id: Long): ItemDetailResponse {
         val user = securityHolder.user
         val item = itemRepository.findByIdOrNull(id) ?: throw CustomException(ItemError.ITEM_NOT_FOUND)
-        if (!item.purchasable) throw CustomException(ItemError.ITEM_NOT_FOUND) // 구매 불가 상품은 찾을 수 없는 것으로 처리
         val itemElements = itemUtil.getItemElements(item)
         val wishItemIds: Set<Long> = if (user != null) {
             wishRepository.findItemIdsByUser(user).toSet()
@@ -124,7 +123,7 @@ class ItemService (
     @Transactional(readOnly = true)
     fun getItems(pageable: Pageable): PageResponse<List<ItemResponse>> {
         val user = securityHolder.user
-        val items = itemRepository.findAllByPurchasableIsTrueOrderByCreatedAtDesc(pageable)
+        val items = itemRepository.findAllByOrderByCreatedAtDesc(pageable)
             .map { itemUtil.toItemResponse(it, user) }
 
         return PageResponse.of(items)

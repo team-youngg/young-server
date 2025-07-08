@@ -15,6 +15,7 @@ data class ItemResponse(
     val stock: Long,
     val categories: List<String>,
     val isWish: Boolean,
+    val purchasable: Boolean,
 ) {
     companion object {
         fun of(item: Item, images: List<String>, options: List<ItemOption>,
@@ -34,6 +35,7 @@ data class ItemResponse(
                 stock = options.sumOf { it.stock },
                 categories = categories.map { it.name },
                 isWish = isWish,
+                purchasable = item.purchasable,
             )
         }
     }
