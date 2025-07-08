@@ -135,6 +135,10 @@ class ItemService (
         item.price = request.price ?: item.price
         item.detail = request.detail ?: item.detail
 
+        itemImageRepository.deleteAllByItem(item)
+        request.images?.map { imageUrl -> ItemImage(url = imageUrl, item = item) }
+            ?.let { itemImageRepository.saveAll(it) }
+
         itemRepository.save(item)
     }
 
