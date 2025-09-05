@@ -54,7 +54,12 @@ jobs:
             cd /home/osoohynn/projects/young
             
             docker-compose stop young-server
+            docker-compose stop young-mysql
+            docker-compose stop young-redis
+            
             docker-compose rm -f young-server
+            docker rm -f young-mysql
+            docker rm -f young-redis
           
             docker-compose pull young-server
             docker-compose up -d young-server
