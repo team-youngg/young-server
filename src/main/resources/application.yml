@@ -42,3 +42,4 @@ management:
     enable:
       jvm: true
       processor: false
+      system: false
