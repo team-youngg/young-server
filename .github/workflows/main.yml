@@ -52,7 +52,7 @@ jobs:
           port: '1234'
           script: |
             cd /home/osoohynn/projects/young
-            sudo docker rm -f $(docker ps -qa)
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
-            sudo docker-compose up -d
-            sudo docker image prune -f
+            docker rm -f $(docker ps -qa) || true
+            docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPO }}
+            docker-compose up -d
+            docker image prune -f
