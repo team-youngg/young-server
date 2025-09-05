@@ -64,9 +64,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
-    // aws health check
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-
     // s3
     implementation("org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE")
 }

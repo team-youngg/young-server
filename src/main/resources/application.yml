@@ -28,21 +28,3 @@ spring:
       max-request-size: 20MB
 toss:
   api_secret: ${TOSS_SECRET_KEY}
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
-  endpoint:
-    health:
-      show-details: never
-
-  metrics:
-    binders:
-      processor:
-        enabled: false
-      system:
-        enabled: false
-        jvm:
-          enabled: true
