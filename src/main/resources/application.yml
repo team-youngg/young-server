@@ -30,16 +30,7 @@ toss:
   api_secret: ${TOSS_SECRET_KEY}
 
 management:
-#  endpoints:
-#    web:
-#      exposure:
-#        include: health,info
-#  endpoint:
-#    health:
-#      show-details: never
-#
   metrics:
-    enable:
-      jvm: true
-      processor: false
-      system: false
+    binders:
+      processor:
+        enabled: false
