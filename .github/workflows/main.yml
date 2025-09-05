@@ -53,10 +53,10 @@ jobs:
           script: |
             cd /home/osoohynn/projects/young
             
-            sudo docker-compose stop young
-            sudo docker-compose rm -f young
+            docker-compose stop young
+            docker-compose rm -f young
           
-            sudo docker-compose pull young
-            sudo docker-compose up -d young
+            docker-compose pull young
+            docker-compose up -d young
           
-            sudo docker image prune -f
+            docker image prune -f
